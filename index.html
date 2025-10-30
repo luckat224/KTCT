@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập Kinh tế Chính trị</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --text-color: #212529; /* Chữ nét hơn */
+            --muted-text: #6c757d;
+            --border-color: #e0e0e0;
+            --correct-bg: #d4edda;
+            --correct-border: #c3e6cb;
+            --wrong-bg: #f8d7da;
+            --wrong-border: #f5c6cb;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .sticky-panel {
+            position: -webkit-sticky; /* Safari */
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        header {
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #fcfcfc;
+            border-radius: 10px 10px 0 0;
+        }
+        h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            justify-content: space-between;
+        }
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            background-color: #fcfcfc;
+        }
+        .progress-stats {
+            flex-grow: 0;
+            display: flex;
+            gap: 15px;
+        }
+        .progress-stats div {
+            font-size: 14px;
+            color: var(--muted-text);
+        }
+        .progress-stats strong {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 2px 5px rgba(0,123,255,0.2);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover { background-color: #5a6268; }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .btn-warning:hover { background-color: #e0a800; }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover { background-color: #c82333; }
+        
+        .tab-button {
+            background-color: #f1f3f5;
+            color: #495057;
+        }
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 0 0 10px 10px;
+            background-color: var(--card-bg);
+        }
+        /* CẬP NHẬT: Thêm 1 panel điều khiển cho tab "Trắc nghiệm Câu sai" */
+        .quiz-controls-panel {
+            padding: 15px;
+            background-color: #fdfdfd;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .question-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 20px;
+        }
+        .question-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .answer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .answer-btn {
+            width: 100%;
+            text-align: left;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1.5;
+        }
+        .answer-btn:hover:not(:disabled) {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+        }
+        .answer-btn:disabled {
+            cursor: not-allowed;
+            opacity: 1 !important; /* Buộc không mờ */
+        }
+        .answer-btn.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: #155724;
+            font-weight: 600;
+        }
+        .answer-btn.wrong {
+            background-color: var(--wrong-bg);
+            border-color: var(--wrong-border);
+            color: #721c24;
+            font-weight: 600;
+        }
+        /* Tab câu sai */
+        .wrong-question-item {
+            font-size: 14px;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            line-height: 1.6;
+        }
+        .wrong-question-item:last-child {
+            border-bottom: none;
+        }
+        .wrong-question-item strong {
+            color: var(--primary-color);
+        }
+        #wrong-list-container:empty::after {
+            content: "Tuyệt vời! Bạn chưa làm sai câu nào.";
+            color: var(--muted-text);
+            font-style: italic;
+        }
+
+        @media (max-width: 700px) {
+            .controls, .quiz-controls-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .progress-stats {
+                justify-content: space-between;
+                width: 100%;
+            }
+            .control-buttons {
+                width: 100%;
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="sticky-panel">
+            <header>
+                <h1>Ôn tập Kinh tế Chính trị</h1>
+            </header>
+            
+            <!-- CẬP NHẬT: Đây là thanh điều khiển CHÍNH (cho Toàn bộ câu hỏi) -->
+            <div id="main-controls" class="controls">
+                <div class="progress-stats">
+                    <div>
+                        Đúng / Đã làm: <strong id="stats-correct-main">0 / 0</strong>
+                    </div>
+                    <div>
+                        Tiến độ: <strong id="stats-progress-main">0 / 0</strong>
+                    </div>
+                </div>
+                <div class="control-buttons">
+                    <button id="shuffle-all-btn-main" class="btn-primary">Trộn câu hỏi & đáp án</button>
+                    <button id="reset-session-btn-main" class="btn-warning">Reset (Làm lại)</button>
+                    <button id="reset-all-btn" class="btn-danger">Reset Tổng</button>
+                </div>
+            </div>
+            
+            <!-- CẬP NHẬT: Thêm 3 tab button -->
+            <div class="tabs">
+                <button id="tab-btn-quiz" class="tab-button active">Trắc nghiệm (Toàn bộ)</button>
+                <button id="tab-btn-wrong-quiz" class="tab-button">Trắc nghiệm (Câu sai)</button>
+                <button id="tab-btn-wrong-list" class="tab-button">Danh sách Câu Sai (<span id="wrong-count">0</span>)</button>
+            </div>
+        </div>
+
+        <!-- Tab 1: Trắc nghiệm toàn bộ -->
+        <div id="tab-content-quiz" class="tab-content">
+            <div id="quiz-container-main">
+                <!-- Câu hỏi chính sẽ được chèn vào đây -->
+            </div>
+        </div>
+
+        <!-- CẬP NHẬT: Tab 2: Trắc nghiệm CÂU SAI -->
+        <div id="tab-content-wrong-quiz" class="tab-content" style="display: none;">
+            <!-- Panel điều khiển riêng cho tab này -->
+            <div class="quiz-controls-panel">
+                <div class="progress-stats">
+                    <div>
+                        Đúng / Đã làm: <strong id="stats-correct-wrong">0 / 0</strong>
+                    </div>
+                    <div>
+                        Tiến độ: <strong id="stats-progress-wrong">0 / 0</strong>
+                    </div>
+                </div>
+                <div class="control-buttons">
+                    <button id="shuffle-all-btn-wrong" class="btn-primary">Trộn câu hỏi & đáp án</button>
+                    <button id="reset-session-btn-wrong" class="btn-warning">Làm lại (Chỉ câu sai)</button>
+                </div>
+            </div>
+            <div id="quiz-container-wrong">
+                <!-- Câu hỏi sai sẽ được chèn vào đây -->
+            </div>
+        </div>
+        
+        <!-- CẬP NHẬT: Tab 3: Danh sách câu sai -->
+        <div id="tab-content-wrong-list" class="tab-content" style="display: none;">
+            <h2>Danh sách các câu đã làm sai (Chỉ xóa khi "Reset Tổng")</h2>
+            <div id="wrong-list-container">
+                <!-- Danh sách câu sai -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. NGUỒN DỮ LIỆU (ĐÃ TRÍCH XUẤT TỪ FILE) ---
+        const RAW_DATA = [
+            "Mục đích nghiên cứu của Kinh tế chính trị Mác – Lênin là gì?=> Là để nhằm tìm ra những quy luật kinh tế chi phối sự vận động và phát triển của phương thức sản xuất.",
+            "Kinh tế tự cung, tự cấp là gì? => Sản xuất để tiêu dùng, không mua bán trao đổi.",
+            "Kinh tế chính trị Mác – Lênin đã kế thừa và phát triển trực tiếp thành tựu tư tưởng nào?=> Kinh tế chính trị cổ điển Anh",
+            "Quy luật kinh tế cơ bản của sản xuất hàng hoá là quy luật nào? => Quy luật giá trị.",
+            "Kinh tế chính trị Mác – Lê nin hướng trọng tâm nghiên cứu =>Mối quan hệ giữa con người với con người trong sản xuất, phân phối, tiêu dùng dưới chủ nghĩa tư bản.",
+            "Chủ nghĩa Mác-Lênin bao gồm những bộ phận=> Triết học Mác-Lênin; Kinh tế chính trị Mác-Lênin; Chủ nghĩa xã hội khoa học.",
+            "Hàng hóa là? => Sản phẩm của lao động, thoả mãn nhu cầu con người, được mua bán và trao đổi trên thị trường.",
+            "Thế nào là lao động giản đơn? => Không cần qua đào tạo.",
+            "Yếu tố nào là nguồn gốc của giá trị hàng hóa? => Lao động của con người",
+            "Giá trị hàng hóa được tạo ra từ đâu? => Từ sản xuất",
+            "Lao động phức tạp là gì? => Phải qua đào tạo.",
+            "Cường độ lao động là gì? => Mức độ khẩn trương trong lao động.",
+            "Cách mạng công nghiệp lần thứ nhất (1.0) khởi phát ở nước Anh, bắt đầu từ khi nào? => Giữa thế kỉ XVIII – giữa thế kỉ XIX.",
+            "Tiền tệ có mấy chức năng? => 5 (Phương tiện thanh toán, lưu thông, cất trữ, thước đo giá trị, tiền tệ thế giới.",
+            "Tư bản là gì? => Giá trị mang lại giá trị thặng dư qua việc bóc lột sức lao động của công nhân.",
+            "Phần giá trị dôi ra ngoài giá trị hàng hoá sức lao động trong nền sản xuất tư bản chủ nghĩa được gọi là gì? => Giá trị thặng dư.",
+            "Công thức của lượng giá trị của hàng hóa gì? => G = C + V + M (C: Tư bản bất biến, khấu hao máy móc, thiết bị, nguyên vật liệu; V: Giá trị sức lao động; M: Giá trị thặng dư)",
+            "Lao động cụ thể là gì? => Lao động có ích dưới 1 hình thức cụ thể của những nghề nghiệp chuyên môn nhất định.",
+            "Sức lao động trở thành hàng hoá khi có điều kiện gì? => Tự do về thân thể và không có tư liệu sản xuất.",
+            "Công nghiệp hóa là gì? => Chuyển từ lao động thủ công sang lao động máy móc để tạo ra năng suất lao động cao.",
+            "Tư bản cố định là gì? => Giá trị được chuyển dần vào sản phẩm mới.",
+            "Tư bản lưu động là bộ phận tư bản như thế nào khi tham gia vào quá trình sản xuất? => Chuyển giá trị trong 1 lần vào sản phẩm mới.",
+            "Nguồn gốc chủ yếu của tích lũy tư bản là gì? => Giá trị thặng dư.",
+            "Chủ nghĩa tư bản độc quyền là gì? => Giai đoạn phát triển cao của chủ nghĩa tư bản.",
+            "Hai hình thức cơ bản của tiền công trong chủ nghĩa tư bản là gì? => Tiền công tính theo thời gian và tiền công tính theo sản phẩm.",
+            "Sản xuất hàng hóa là gì? => Sản xuất ra để trao đổi mua bán trên thị trường.",
+            "Thước đo lượng giá trị xã hội của hàng hoá được tính bằng yếu tố nào? => Thời gian lao động xã hội cần thiết.",
+            "Trong lịch sử phát triển của nền sản xuất hàng hóa, tiền tệ có những hình thái giá trị nào? => 4 (Hình thái giá trị giản đơn, mở rộng, chung, tiền tệ)",
+            "Độc quyền là gì? => Liên minh giữa các doanh nghiệp lớn nhằm thu lợi nhuận độc quyền cao.",
+            "Lưu thông hàng hoá giản đơn nhằm mục đích gì? => Giá trị sử dụng.",
+            "Quan hệ lưu thông hàng hóa theo công thức T–H–T’, là của nền kinh tế nào? => Hàng hóa thị trường Tư bản",
+            "Đâu là công thức chung của tư bản? => T H T‘",
+            "Lưu thông tư bản nhằm mục đích gì? => Giá trị và giá trị thặng dư.",
+            "Biểu hiện của tiền công trong xã hội tư bản là gì? => Giá cả của hàng hoá sức lao động.",
+            "Tiền công tính theo thời gian là gì? => Trả theo thời gian làm việc.",
+            "Tiền công thực tế là gì? => Hàng hoá và dịch vụ mua được bằng tiền công danh nghĩa.",
+            "Giá cả độc quyền là gì? => Giá cả do các tổ chức độc quyền áp đặt trong mua và bán hàng hóa.",
+            "Nguồn gốc của lợi nhuận tư bản thương nghiệp là từ đâu? => Một phần giá trị thặng dư được tạo ra từ sản xuất mà nhà tư bản công nghiệp nhượng lại cho nhà tư bản thương nghiệp.",
+            "Tốc độ chu chuyển của tư bản là gì? => Là khái niệm dùng để chỉ sự vận động nhanh hay chậm, của tư bản ứng trước.",
+            "Lợi nhuận bình quân được hình thành do => cạnh tranh giữa các ngành",
+            "Để có giá trị thặng dư tuyệt đối, trong quá trình sản xuất nhà tư bản làm gì? => Kéo dài ngày lao động hoặc tăng cường độ lao động",
+            "Nguyên nhân hình thành tỷ suất lợi nhuận bình quân => Do cạnh tranh giữa các ngành sản xuất trong xã hội.",
+            "Bộ phận tư bản biểu hiện dưới hình thái giá trị gồm: máy móc, thiết bị, nhà xưởng… giá trị chuyển từng phần vào sản phẩm trong quá trình sản xuất là loại tư bản nào? => Tư bản cố định.",
+            "Phương pháp sản xuất GTTD tuyệt đối, nhà tư bản muốn thu được GTTD thì ngày lao động của người công nhân => Lớn hơn thời gian lao động tất yếu.",
+            "Bộ phận tư bản sản xuất: nguyên liệu, nhiên liệu, vật liệu phu, sức lao đông… giá trị của nó được chuyển toàn bộ vào sản phẩm trong quá trình sản xuất khi hàng hóa bán xong là bộ phận tư bản nào? => Tư bản lưu động.",
+            "Nền kinh tế thị trường là gì? => Là nền kinh tế hàng hóa phát triển ở trình độ cao.",
+            "Địa tô của tư bản là gì? => Phần giá trị thặng dư ngoài lợi nhuận bình quân mà nhà tư bản kinh doanh nông nghiệp phải nộp cho chủ đất.",
+            "Yếu tố nào quyết định vật phẩm trở thành hàng hóa? => Do lao động tạo ra, có công dụng nhất định, thông qua mua bán.",
+            "Tích tụ tư bản là gì? => .Quá trình tăng quy mô của tư bản cá biệt bằng cách tư bản hóa một phần giá trị thặng dư.",
+            "Giá trị sử dụng của hàng hóa là gì? => Là công dụng của sản phẩm có thể thoả mãn nhu cầu nào đó của con người.",
+            "Giá trị của hàng hóa là gì? => Là giá trị của lượng lao động tiêu hao để sản xuất ra hàng hóa, được tính bằng thời gian lao động xã hội cần thiết.",
+            "Tỷ suất lợi tức (Z’) là =>tỷ lệ % giữa lợi tức và tư bản cho vay",
+            "Các hàng hóa trao đổi được với nhau là dựa trên cơ sở nào? => Cơ sở giá trị của hàng hoá (thời gian lao động và công sức lao động).",
+            "Tư bản cố định khi tham gia vào quá trình sản xuất được chuyển hóa như thế nào? => Giá trị của nó không chuyển hết một lần mà chuyển dần từng phần vào sản phẩm trong quá trình sản xuất.",
+            "Hao mòn hữu hình hình là gì? => Là hao mòn vật chất do quá trình sử dụng hoặc do tác động của tự nhiên",
+            "Cách mạng công nghiệp lần thứ 3 (3.0, Cách mạng kĩ thuật số, kỉ nguyên công nghệ thông tin) bắt đầu từ khoảng thời gian nào? => Những năm 1950 – cuối những năm 1970.",
+            "Khủng hoảng kinh tế trong chủ nghĩa tư bản theo chu kỳ nào? => Khủng hoảng – tiêu điều – phục hồi – hưng thịnh.",
+            "Thực chất giá trị thặng dư là gì? => Phần giá trị dôi ra ngoài giá trị sức lao động, do công nhân làm thuê tạo ra và bị nhà tư bản chiếm không.",
+            "Tỷ suất lợi nhuận được tính theo công thức nào? Tỷ suất giá trị thặng dư được tính theo công thứ nào => (xem giáo trình hoặc slide bài giảng)",
+            "Giá trị thặng dư được tạo ra từ đâu? => Sức lao động của công nhân làm thuê.",
+            "Hội nhập kinh tế quốc tế của một quốc gia là gì? => Là quá trình quốc gia đó thực hiện gắn kết nền kinh tế của mình với nền kinh tế thế giới dựa trên sự chia sẻ lợi ích đồng thời tuân thủ các chuẩn mực quốc tế chung.",
+            "Sự phân chia giá trị thặng dư giữa tư bản công nghiệp và tư bản thương nghiệp dựa vào đâu ? => Tỷ suất lợi nhuận bình quân",
+            "Hai điều kiện để sản xuất hàng hóa ra đời là gì? => Có sự phân công lao động xã hội và sự tách biệt tương đối về mặt kinh tế của những người sản xuất.",
+            "Đơn vị nào đo lượng giá trị hàng hóa? => Lượng lao động tiêu hao để sản xuất ra hàng hoá đó.",
+            "Quy luật giá trị giữ vị trí như thế nào trong nền kinh tế hàng hóa? => Là quy luật cơ bản của sản xuất và trao đổi hàng hóa.",
+            "Một trong các yêu cầu của quy luật giá trị là gì? => Sản xuất và trao đổi hàng hóa phải dựa trên cơ sở hao phí sức lao động xã hội cần thiết.",
+            "Tác dụng của quy luật giá trị là gì? => Điều tiết sản xuất và lưu thông hàng hóa, cải tiến kĩ thuật, tăng năng suất lao động và phân hoá những người sản xuất.",
+            "Sự tác động của quy luật cung và cầu làm cho mối quan hệ giữa giá cả và giá trị như thế nào? => Nếu cung lớn hơn cầu thì giá cả thấp hơn giá trị, cung nhỏ hơn cầu thì giá cả cao hơn giá trị, cung bằng cầu thì giá cả bằng giá trị.",
+            "Giá cả bằng giá trị khi nào? => Cung bằng cầu.",
+            "Phương thức sản xuất tư bản chủ nghĩa được thiết lập và phát triển qua các giai đoạn nào? => Chủ nghĩa tư bản tự do cạnh tranh và chủ nghĩa tư bản độc quyền.",
+            "Kinh tế thị trường định hướng xã hội chủ nghĩa là nền kinh tế như thế nào? => Là nền kinh tế nhiều thành phần, trong đó khu vực kinh tế nhà nước giữ vai trò chủ đạo, với mục tiêu xây dựng chủ nghĩa xã hội.",
+            "Tính tất yếu khách quan của việc phát triển kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam, xuất phát từ những lý do nào? => Phù hợp với quy luật phát triển kinh tế khách quan; có rất nhiều ưu việt là động lực quan trọng của việc thúc đẩy sự phát triển kinh tế xã hội của đất nước; phù hợp với nguyện vọng của nhân dân mong muốn xã hội dân giàu nước mạnh xã hội công bằng dân chủ văn minh.",
+            "Tốc độ chu chuyển tăng lên => thì tỷ suất lợi nhuận sẽ tăng lên",
+            "GTTD => Phần giá trị mới dôi ra ngoài giá trị sức lao động trong nền sản xuất TBCN.",
+            "Giá trị sử dụng của hàng hóa sức lao động, khi sử dụng sẽ như thế nào? => Không những giá trị của nó được bảo tồn mà còn tạo ra giá trị lớn hơn.",
+            "Lao động cụ thể tạo ra thuộc tính nào của hàng hóa? => Giá trị sử dụng của hàng hoá.",
+            "Những nhân tố góp phần làm tăng quy mô tích lũy tư bản => (xem giáo trình)",
+            "Lao động trừu tượng tạo ra thuộc tính nào của hàng hóa? => Giá trị hàng hóa.",
+            "Tư bản bất biến (c) là gì? => Là bộ phận tư bản dùng để mua tư liệu sản xuất và giá trị được bảo toàn và chuyển vào sản phẩm.",
+            "Tốc độ chu chuyển của tư bản tăng lên thì tỉ suất lợi nhuận sẽ như thế nào? => Tăng lên",
+            "Giá trị hàng hóa sức lao động gồm những yếu tố nào? => Vật chất tinh thần công nhân và gia đình công nhân và phí tổn đào tạo.",
+            "Đại hội lần thứ mấy của Đảng Cộng sản Việt Nam xác định: công nghiệp hóa – hiện đại hóa gắn với kinh tế tri thức? => Đại hội lần thứ X",
+            "Tính hai mặt của lao động sản xuất hàng hóa đó là gì? => Lao động cụ thể và lao động trừu tượng.",
+            "Giá trị cá biệt của hàng hóa do yếu tố nào quy định? => Hao phí lao động cá biệt của chính nhà sản xuất quyết định.",
+            "Vai trò của máy móc trong quá trình sản xuất giá trị thặng dư là gì? => Tiền đề vật chất để tạo ra giá trị thặng dư.",
+            "Tiền lương danh nghĩa là gì? => Tiền lương cơ bản phải trả cho người lao động.",
+            "Sự giống nhau giữa lợi nhuận và giá trị thặng dư là gì? => Là lao động không công của công nhân tạo ra.",
+            "Khi nào tiền tệ mang hình thái tư bản? => Khi sức lao động trở thành hàng hóa.",
+            "Giá trị thặng dư siêu ngạch là gì? => Hình thái biến tướng của giá trị thặng dư tương đối.",
+            "Tích tụ tư bản là gì? => Tăng quy mô tư bản cá biệt bằng cách tư bản hoá giá trị thặng dư.",
+            "Tập trung tư bản là gì? => Hợp nhất các tư bản cá biệt để có một tư bản cá biệt lớn hơn.",
+            "Sản xuất hàng hóa ra đời và tồn tại trong điều kiện nào? => Phân công lao động xã hội và sự tách biệt về sở hữu.",
+            "Thời gian lưu thông hàng hóa bằng tổng thời gian của những công đoạn nào? => Thời gian mua + thời gian bán hàng hóa.",
+            "Giá trị trao đổi của hàng hóa là gì? => Tỉ lệ so sánh về lượng giữa 2 hàng hóa.",
+            "Yếu tố nào được xác định là thực thể của giá trị hàng hóa? => Lao động trừu tượng.",
+            "Giá trị hàng hóa được tạo ra từ công đoạn nào? => Từ sản xuất hàng hóa.",
+            "Yếu tố nào quyết định giá trị xã hội của hàng hóa? => Lao động hao phí để sản xuất ra hàng hóa.",
+            "Giá cả hàng hóa là gì? => Biểu hiện bằng tiền của giá trị hàng hóa.",
+            "Yếu tố bên trong quyết định giá cả hàng hóa là gì? => Giá trị của hàng hoá.",
+            "Bản chất của tiền tệ là gì ? => Là hàng hóa đặc biệt, vật ngang giá cho các hàng hoá khác; thể hiện lao động xã hội kết tinh trong hàng hoá; phản ánh quan hệ kinh tế giữa những người sản xuất hàng hóa.",
+            "Trong nền kinh tế thị trường định hướng xã hội chủa nghĩa ở Việt Nam thành phần kinh tế nào giữ vai trò chủ đạo? => Kinh tế nhà nước.",
+            "Cơ chế thị trường là gì ? => Hệ thống các quan hệ kinh tế mang tính tự điều chỉnh tuân theo yêu cầu của các quy luật kinh tế.",
+            "Thể chế kinh tế thị trường định hướng xã hội chủ nghĩa là gì? => Là thể chế kinh tế thị trường trong đó các thiết chế, công cụ và nguyên tắc vận hành được tự giác tạo lập và sử dụng để phát triển lực lượng sản xuất cải thiện đời sống nhân dân vì mục tiêu dân giàu nước mạnh xã hội công bằng dân chủ văn minh.",
+            "Sức lao động là gì? => Năng lực thể chất và tinh thần của con người được vận dụng vào quá trình sản xuất.",
+            "Quy luật kinh tế chủ yếu của thị trường là những quy luật nào? => Quy luật giá trị, cung cầu, cạnh tranh, lưu thông tiền tệ.",
+            "Một trong những hệ quả của tích lũy tư bản là gì? => Làm tăng cấu tạo hữu cơ tư bản, tăng tích tụ & tập trung tư bản, bần cùng hóa giai cấp vô sản, đk sống của người lao động tệ đi & tích lũy giàu có về giai cấp tư sản.",
+            "Quy luật cung - cầu có vai trò gì? => Là căn cứ để quyết định mở rộng hay thu hẹp quy mô sản xuất.",
+            "Hai thuộc tính của hàng hóa sức lao động là gì? => Giá trị và giá trị sử dụng.",
+            "Những nhân tố nào góp phần làm tăng quy mô tích lũy tư bản? => Trình độ bóc lột sức lao động; trình độ năng suất lao động; sự chênh lệch ngày càng tăng giữa tư bản sử dụng & tư bản đã tiêu dùng; quy mô của tư bản ứng trước.",
+            "Thực chất của tư bản là gì? => Là quan hệ bóc lột trong đó giai cấp tư sản đã chiếm đoạt giá trị thặng dư do giai cấp công nhân sáng tạo ra.",
+            "Tư bản khả biến (v) là gì? => Bộ phận trực tiếp tạo ra giá trị thặng dư.",
+            "Khối lượng giá trị thặng dư là gì? => Là tích số giữa tỉ suất giá trị thặng dư và tổng tư bản khả biến đã được sử dụng. (M = m’.V).",
+            "Vai trò của cách mạng công nghiệp đối với phát triển là gì? => Thúc đẩy sự phát triển lực lượng sản xuất, hoàn thiện quan hệ sản xuất và đổi mới phương thức quản trị phát triển.",
+            "Thế nào là phương pháp sản xuất giá trị thặng dư tương đối? => Rút ngắn thời gian lao động tất yếu bằng cách hạ thấp giá trị sức lao động, kéo dài thời gian lao động thặng dư, độ dài ngày lao động không đổi hoặc rút ngắn.",
+            "Thế nào là phương pháp sản xuất giá trị thặng dư tuyệt đối? => Kéo dài thời gian lao động thặng dư, còn giá trị sức lao động và thời gian lao động cần thiết không thay đổi.",
+            "Điểm giống nhau giữa phương pháp giá trị thặng dư tuyệt đối và phương pháp giá trị thặng dư tương đối là gì? => Đều làm tăng tỉ suất giá trị thặng dư.",
+            "Thực chất giá trị thặng dư siêu ngạch là gì? => Là giá trị thặng dư thu được do tăng năng suất lao động cá biệt, làm cho giá trị cá biệt của hàng hoá thấp hơn giá thị trường. (Một hình thức biến tướng của giá trị thặng dư tương đối)",
+            "Trong nền kinh tế thị trường, xét về vai trò kinh tế, nhà nước thực hiện chức năng gì? => Quản lí nhà nước về kinh tế đồng thời thực hiện những biện pháp để khắc phục những khuyết tật của thị trường.",
+            "Thực chất, nguồn gốc duy nhất của tư bản tích lũy là gì? => Giá trị thặng dư.",
+            "Tư bản thương nghiệp trong chủ nghĩa tư bản là gì? => Một bộ phận của tư bản công nghiệp tách ra phục vụ quá trình lưu thông hàng hóa.",
+            "Lợi tức là gì? => Một phần lợi nhuận bình quân mà nhà tư bản đi vay phải trả cho nhà tư bản cho vay căn cứ vào lượng tư bản tiền tệ./ Một phần lợi nhuận bình quân mà nhà tư bản đi vay phải trả cho nhà tư bản cho vay vì đã sử dụng lượng tiền nhàn rỗi của người cho vay.",
+            "Lợi nhuận bình quân được hình thành là do yếu tố nào? => Cạnh tranh giữa các ngành.",
+            "Xuất khẩu tư bản là đặc điểm cơ bản của giai đoạn nào trong chủ nghĩa tư bản? => Chủ nghĩa tư bản độc quyền.",
+            "Khi năng suất lao động tăng lên, giá trị 1 đơn vị sản phẩm sẽ thế nào? => Giảm xuống.",
+            "Khi năng suất lao động tăng thì thời gian hao phí lao động cần thiết trong một đơn vị hàng hóa sẽ như thế nào? => Năng suất lao động sẽ làm giảm hao phí lao động trong một đơn vị sản phẩm.",
+            "Khối lượng giá trị thặng dư (M) phản ánh điều gì? => Quy mô của sự bóc lột.",
+            "Cách mạng công nghiệp lần thứ tư (4.0) là cuộc cách mạng như thế nào? => Là sự kết hợp của công nghệ trong các lĩnh vực vật lý, công nghệ số và sinh học, tạo ra những khả năng sản xuất hoàn toàn mới và có tác động sâu sắc đến đời sống kinh tế, chính trị, xã hội của thế giới.",
+            "Nền kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam là nền kinh tế như thế nào? => Nhiều hình thức sở hữu, nhiều thành phần kinh tế, kinh tế nhà nước giữ vai trò chủ đạo.",
+            "Giá trị sử dụng hàng hoá sức lao động là để thoả mãn nhu cầu của ai? => Thoả mãn nhu cầu của người mua.",
+            "Các nhân tố ảnh hưởng tới tỷ suất lợi nhuận là gì? => Tỉ suất giá trị thặng dư, cấu tạo hữu cơ tư bản, tốc độ trung chuyển tư bản, tiết kiệm tư bản bất biến.",
+            "Tiền công trong chủ nghĩa tư bản là gì? => Là biểu hiện bằng tiền của giá trị hàng hóa sức lao động, là giá cả của hàng hoá sức lao động.",
+            "Xuất khẩu tư bản nhằm mục đích gì? => Tìm kiếm giá trị thặng dư ở những nước nhập khẩu tư bản.",
+            "Quan điểm về công nghiệp hóa, hiện đại ở Việt Nam trong bối cảnh cách mạng công nghiệp lần thứ tư? => Chuẩn bị các điều kiện cần thiết, giải phóng mọi nguồn lực, thực hiện các biện pháp đồng bộ, phát huy tinh thần sáng tạo.",
+            "Cạnh tranh trong nội bộ ngành nhằm mục đích gì? => Thu về lợi nhuận siêu ngạch cao.",
+            "Cạnh tranh giữa các ngành dẫn đến tỷ suất lợi nhuận gì? => Hình thành tỉ suất lợi nhuận bình quân.",
+            "Tác động của nhân tố nào làm thay đổi lượng giá trị của một đơn vị sản phẩm? => Năng suất lao động.",
+            "Tăng năng suất lao động và tăng cường độ lao động giống nhau ở điểm nào? => Đều làm tăng sản phẩm trong một đơn vị thời gian.",
+            "Trong mối quan hệ giữa giá cả và giá trị của hàng hóa thì yếu tố nào là cơ sở? => Giá trị là cơ sở của giá cả.",
+            "Chức năng nào của tiền tệ không đòi hỏi phải là tiền vàng? => Chức năng phương tiện lưu thông và phương tiện thanh toán.",
+            "Thời gian lao động thặng dư là thời gian người lao động có được trả công không? => Không.",
+            "Nhân tố nào trong quá trình sản xuất chủ yếu tạo ra giá trị thặng dư? => Tư bản khả biến.",
+            "Tuần hoàn của tư bản là sự vận động của tư bản lần lượt qua các giai đoạn nào? => Tư bản tiền tệ - tư bản sản xuất - tư bản hàng hóa (3 giai đoạn).",
+            "Căn cứ vào đâu để chia tư bản thành tư bản bất biến và tư bản khả biến? => Dựa vào vai trò của từng bộ phận tư bản trong quá trình sản xuất ra giá trị thặng dư.",
+            "Tỷ suất giá trị thặng dư là gì? => Tỉ lệ phần trăm giữa lượng giá trị thặng dư và tư bản khả biến.",
+            "Với phương pháp sản xuất giá trị thặng dư tuyệt đối thì thời gian lao động thặng dư có thay đổi không? => Kéo dài thời gian lao động thặng dư.",
+            "Nhà tư bản áp dụng phương pháp sản xuất giá trị thặng dư tương đối bằng cách nào? => Rút ngắn thời gian lao động tất yếu bằng cách hạ thấp giá trị sức lao động nhờ đó tăng thời gian lao động thặng dư lên trong điều kiện ngày lao động và cường độ lao động không đổi.",
+            "Nêu các mô hình công nghiệp hóa tiêu biểu trên thế giới? => Mô hình CNH cổ điển, mô hình CNH kiểu Liên Xô (cũ), môn hình CNH của Nhật Bản và các nước công nghiệp mới (NICs)",
+            "Nội dung hội nhập kinh tế quốc tế của Việt Nam là gì? => Chuẩn bị các điều kiện để hội nhập thành công; thực hiện đa dạng các hình thức, các mức độ hội nhập kinh tế quốc tế.",
+            "Giá cả độc quyền do những yếu tố nào quyết định? => Chi phí sản xuất và lợi nhuận độc quyền.",
+            "Yếu tố nào không góp phần làm tăng quy mô tích lũy tư bản? => Nâng cao giá trị sức lao động.",
+            "Tích lũy tư bản thực chất là sự tiết kiệm tư bản. Đúng hay sai? => Sai.",
+            "Nếu tỷ lệ phân chia quỹ tích lũy và quỹ tiêu dùng của nhà tư bản đã được xác định, thì quy mô tích lũy tư bản phụ thuộc trực tiếp vào yếu tố nào? => Khối lượng giá trị thặng dư.",
+            "Một trong những đặc điểm của tư bản cho vay là gì? => Quyền sở hữu tách rời quyền sử dụng; là một hàng hóa đặc biệt; là tư bản được sùng bái nhất.",
+            "Hãy sắp xếp lần lượt các hình thái giá trị? => Ngẫu nhiên hay đơn giản – mở rộng hay đầy đủ - chung – tiền.",
+            "Loại tái sản xuất nào làm tăng sản phẩm chủ yếu do tăng năng suất lao động và hiệu quả sử dụng các nguồn lực? => Tái sản xuất mở rộng theo chiều rộng.",
+            "Các nhân tố ảnh hưởng đến quan hệ lợi ích kinh tế là gì? => Lực lượng sx, quan hệ sx, chính sách nhà nước, mức độ hội nhập quốc tế.",
+            "Thời gian tiêu thụ hàng hóa có nằm trong thời gian sản xuất không? => Không.",
+            "Tiền lương có thuộc tư bản lưu động không? => Có",
+            "Ngày lao động của công nhân bao gồm thời gian nào? => Thời gian lao động cần thiết và thời gian lao động thặng dư.",
+            "Một tư bản có thời gian chu chuyển tư bản là 6 tháng / 1 vòng thì tốc độ chu chuyển tư bản trong năm tính được là bao nhiêu? => N = CH/ch = 12/6 = 2 vòng. (N: số vòng, CH: thời gian trong năm, ch: thời gian cho 1 vòng).",
+            "Khi hàng hóa bán đúng giá trị thì lợi nhuận (p) và giá trị thặng dư (m) sẽ như thế nào? => Bằng nhau.",
+            "Tư bản thương nghiệp trong chủ nghĩa tư bản có chức năng gì? => Lưu thông hàng hóa của tư bản công nghiệp.",
+            "Nguyên nhân hình thành tỷ suất lợi nhuận bình quân? => Cạnh tranh giữa các ngành.",
+            "Chi phí sản xuất là gì? => Những khoản phí cần thiết liên quan đến hoạt động sản xuất ra sản phẩm.",
+            "Hãy điền vào chỗ còn trống: “Tiền tệ là một hàng hoá đặc biệt được tách ra làm…..cho các hàng hoá khác.” => Vật ngang giá chung.",
+            "Một số quan hệ lợi ích kinh tế cơ bản trong nền kinh tế thị trường là gì? => Giữa người lao động và người sử dụng lao động; giữa những người sử dụng lao động; giữa những người lao động; giữa lợi ích cá nhân, lợi ích nhóm, lợi ích xã hội.",
+            "Quan hệ giữa giá cả và giá trị. Chọn câu đúng? => Giá trị là cơ sở của giá cả, quyết định giá cả; Giá cả là hình thức biểu hiện bằng tiền của giá trị; giá cả thị trường chịu ảnh hưởng của cung – cầu, giá trị của tiền.",
+            "Cách mạng công nghiệp lần thứ tư (4.0) là cuộc cách mạng có nội dung gì? => Cuộc cách mạng về sản xuất thông minh dựa trên những thành tựu trong các lĩnh vực công nghệ thông tin, công nghệ sinh học, với nền tảng là sự đột phá của công nghệ số.",
+            "Nền kinh tế tri thức được xem là nền kinh tế như thế nào? => Một nấc thang phát triển của lực lượng sản xuất.",
+            "Xuất khẩu tư bản là gì? => Đầu tư trực tiếp ra nước ngoài, cho nước ngoài vay, nhằm chiếm đoạt giá trị thặng dư ở các nước nhập khẩu tư bản",
+            "Quan điểm về công nghiệp hóa, hiện đại ở Việt Nam trong bối cảnh cách mạng công nghiệp lần thứ tư như thế nào? => Chủ động chuẩn bị các điều kiện cần thiết, giải phóng mọi nguồn lực; các giải pháp thích ứng phải được thực hiện đồng bộ, phát huy sức sáng tạo của toàn dân.",
+            "Tư bản bất biến (c) và tư bản khả biến (v) có vai trò như thế nào trong quá trinh sản xuất giá trị thặng dư? => Cả 2 có vai trò ngang nhau trong quá trình tạo ra giá trị thặng dư (tư bản bất biến là không thể thiếu, tư bản khả biến có vai trò quyết định)",
+            "Tác động của nhân tố nào dưới đây làm thay đổi lượng giá trị của một đơn vị sản phẩm? => Lượng lao động xã hội cần thiết (thời gian lao động xã hội cần thiết). Câu trả lời khác: Năng suất lao động, cường độ lao động, mức độ giản đơn hay phức tạp của lao động.",
+            "Một trong tính tất yếu khách quan của hội nhập kinh tế quốc tế là gì? => Do xu thế khách quan trong bối cảnh toàn cầu hóa kinh tế; là phương thức phát triển của hầu hết các nước, nhất là các nước đang và kém phát triển.",
+            "Địa tô chênh lệch I là gì? => Địa tô thu được từ ruộng từ ruộng đất màu mỡ.",
+            "Địa tô chênh lệch II là gì? => Địa tô thu được từ ruộng từ ruộng đất không màu mỡ nhưng đã được cải tạo.",
+            "Công thức M = m’.V là để tính đại lượng nào? => Khối lượng giá trị thặng dư.",
+            "Phương pháp sản xuất giá trị thặng dư tuyệt đối và phương pháp sản xuất giá trị thặng dư tương đối mà nhà tư bản tiến hành nhằm mục đích gì? => Sản xuất ra giá trị thặng dư tối đa.",
+            "Theo giáo trình KTCT có mấy đặc trưng cơ bản của kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam? => 5 đặc trưng.",
+            "Lý do phải thực hiện hoàn thiện thể chế kinh tế thị trường định hướng xã hội chủ nghĩa? => Thể chế KTTT định hướng XHCN còn chưa đồng bộ; hệ thống thể chế còn chưa đầy đủ; hệ thống thể chế còn kém hiệu lực, hiệu quả, kém đầy đủ các yếu tố thị trường và các loại thị trường.",
+            "Một nội dung cơ bản để hoàn thiện thể chế kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam là gì? => Nội dung cơ bản nhất là hoàn thiện thể chế về sở hữu và phát triển các thành phần kinh tế, loại hình doanh nghiệp.",
+            "Quan điểm của Đảng Cộng sản Việt Nam về nguyên tắc lợi ích vì dân là gì? => Nhân dân là trung tâm.",
+            "Phương thức thực hiện lợi ích kinh tế trong các quan hệ lợi ích chủ yếu là gì? => Thực hiện theo nguyên tắc thị trường, chính sách nhà nước và vai trò của các tổ chức xã hội.",
+            "Nội dung cơ bản của cuộc cách mạng công nghiệp lần thứ nhất là gì? => Chuyển từ lao động thủ công thành lao động máy móc, cơ giới hóa sản xuất bằng việc sử dụng năng lượng nước và hơi nước.",
+            "Cách mạng công nghiệp lần thứ ba có đặc trưng cơ bản là gì? => Công nghệ thông tin và tự động hóa.",
+            "Cách mạng công nghiệp lần thứ tư được đề cập lần đầu tiên tại đâu? => Hội chợ công nghiệp Hannover (Cộng hòa Liên bang Đức năm 2011)",
+            "Cuộc cách mạng công nghiệp 4.0 được dự báo phát triển như thế nào? => Sẽ làm thay đổi thế giới với một quy mô và tốc độ rất lớn; mang đến sự biến đổi triệt để với những robot được tích hợp hệ thống mạng – vật lý.",
+            "Mô hình công nghiệp hóa kiểu Liên Xô được bắt đầu thực hiện vào thời gian nào? => Những năm 1930 ở Liên Xô (cũ).",
+            "Việt Nam thực hiện Công nghiệp hóa kiểu Liên Xô được bắt đầu vào thời gian nào? => 1960.",
+            "Việt Nam gia nhập Hiệp hội các quốc gia Đông Nam Á (ASEAN) năm nào? => 1995.",
+            "Việt Nam tham gia Khu vực thương mại tự do ASEAN (AFTA) năm nào? => 1998.",
+            "Việt Nam tham gia sáng lập Diễn đàn hợp tác Á - Âu (ASEM) năm nào? => 1996.",
+            "Việt Nam tham gia Diễn đàn Hợp tác Kinh tế châu Á - Thái Bình Dương (APEC) năm nào? => 14/11/1998.",
+            "Việt Nam chính thức trở thành thành viên của Tổ chức thương mại thế giới (WTO) năm nào? => 07/11/2006.",
+            "Phân biệt quy luật kinh tế và chính sách kinh tế? => Quy luật kinh tế là cơ sở của chính sách kinh tế, chính sách kinh tế là sự vận dụng các quy luật kinh tế và các quy luật khác vào hoạt động kinh tế.",
+            "Kinh tế chính trị Mác – Lênin có những chức năng cơ bản nào? => Cải tạo thực tiễn, thúc đẩy sự phát triển của xã hội, giải phóng com người, xoá bỏ dần những áp bức bất công (Chức năng nhận thức, thực tiễn, tư tưởng, phương pháp luận).",
+            "Khi sử dụng hàng hóa sức lao động sẽ tạo ra => Giá trị mới lớn hơn giá trị bản thân nó",
+            "Tóm tắt đặc trưng của các cuộc CMCN: => + CMCN lần thứ nhất: sử dụng năng lượng nước và hơi nước, để cơ khí hóa sx\n+ CMCN lần thứ hai: sử dụng năng lượng điện và động cơ điện, để tạo ra dây chuyền sản xuất hàng loạt.\n+ CMCN lần thứ ba: sử dụng công nghệ thông tin và máy tính, để tự động hóa sx.\n+ CMCN lần thứ tư: liên kết giữa thế giới thực và ảo, để thực hiện công việc thông minh và hiệu quả nhất.",
+            "Sự tác động của cung và cầu làm cho => Giá cả vận động xoay quanh giá trị",
+            "Tác động của quy luật giá trị =>Điều tiết sx, lưu thông hàng hóa; Kích thích cải tiến công nghệ; Phân hóa giàu nghèo giữa những người sản xuất.",
+            "Nền kinh tế thị trường là nền kinh tế vận hành theo cơ chế thị trường",
+            "Phương pháp sx GTTD tuyệt đối, GTTD tương đối: (xem giáo trình)",
+            "Nhà tư bản áp dụng phương pháp sx GTTD tương đối bằng cách =>Tăng năng suất lao động xã hội, làm rút ngắn thời gian lao động cần thiết.",
+            "Giá trị cá biệt của hàng hóa do => Hao phí lao động cá biệt của nhà sản xuất quyết định",
+            "Tốc độ chu chuyển của tư bản là => Số vòng quay của TB trong năm",
+            "Cơ chế thị trường, thể chế kinh tế thị trường => (xem giáo trình)",
+            "Năng suất lao động => làm thay đổi lượng giá trị của một đơn vị sản phẩm",
+            "Kinh tế nhà nước đóng vai trò chủ đạo trong nền kinh tế thị trường định hướng XHCN ở Việt Nam.",
+            "Tỷ suất GTTD => tỷ lệ phần trăm giữa GTTD và tư bản khả biến",
+            "Tỷ suất lợi tức (z’) => tỷ lệ phần trăm giữa lợi tức và tư bản cho vay.",
+            "Cạnh tranh nội bộ ngành => thu lợi nhuận siêu ngạch",
+            "Xuất khẩu tư bản là đặc điểm cơ bản của CNTB độc quyền",
+            "Chi phí sx là phần giá trị của hàng hóa, bù lại giá cả tiêu dùng những tư liệu sx đã tiêu dùng và giá cả sức lao động đã được sử dụng để sx ra hàng hóa đó.",
+            "Tỷ suất lợi tức chịu ảnh hưởng của các nhân tố => tỷ suất lợi nhuận bình quân và tình hình cung cầu về tư bản cho vay",
+            "Khối lượng GTTD => lượng GTTD bằng tiền mà nhà tư bản thu được.",
+            "Tư bản thương nghiệp => Một phần GTTD tạo ra từ sx mà tư bản công nghiệp nhượng lại cho tư bản thương nghiệp",
+            "Ba giai đoạn của tuần hoàn => TB tiền tệ - TB sản xuất - TB hàng hóa",
+            "Sức lao động => toàn bộ thể lực và trí lực nói lên khả năng lao động của con người.",
+            "Vai trò một số chủ thể tham gia thị trường => Người sản xuất; người tiêu dùng; các chủ thể trung gian trong thị trường; Nhà nước",
+            "Khái niệm về lợi nhuận, lợi túc, địa tô TBCN ( xem giáo trình & bài giảng)",
+            "Hội nhập kinh tế quốc tế là tất yêu khách quan vì: => + Thứ nhất, do xu thế khách quan trong bối cảnh toàn cầu hóa kinh tế\n+ Thứ hai, hội nhập kinh tế quốc tế là phương thức phát triển phổ biến của các nước, nhất là các nước đang và kém phát triển trong điều kiện ngày nay.",
+            "Tính tất yếu của CNH-HĐH: xem giáo trình và bài giảng",
+            "Các mô hình công nghiệp hóa tiêu biểu trên thế giới: mô hình công nghiệp hóa cổ điển; mô hình công nghiệp hóa kiểu Liên Xô; mô hình công nghiệp hóa của Nhật Bản và các nước công nghiệp mới (NICS)",
+            "Vai trò của cách mạng công nghiệp đối với phát triển => thúc đẩy sự phát triển lực lượng sx; thúc đẩy hoàn thiện quan hệ sx; thúc đẩy đổi mới phương thức quản trị phát triển.",
+            "CMCN lần thứ nhất (1.0) khởi phát từ nước Anh, bắt đầu từ giữa thế kỷ XVIII đến giữa thế kỷ XIX",
+            "+ CMCN lần thứ hai (2.0) diễn ra vào nửa cuối thế kỷ XIX đến đầu thế kỷ XX.",
+            "+ CMCN lần thứ ba (3.0) bắt đầu từ khoảng những năm đầu thập niên 60 thế kỷ XX đến cuối thế kỷ XX",
+            "+ CMCN lần thứ tư (4.0) được đề cập lần đầu tiên tại Hội chợ triển lãm công nghệ Hannover (CHLB Đức) năm 2011 và được chính phủ Đức đưa vào “Kế hoạch hành động chiến lược công nghệ cao” năm 2012.",
+            "Khái niệm về lợi ích kinh tế; k/n quan hệ lợi ích kinh tế ( xem giáo trình)",
+            "Giá trị hàng hóa được tạo ra chủ yếu từ giai đoạn sản xuất hàng hóa",
+            "Một số hệ quả của tích lũy tư bản: tích lũy TB làm tăng cấu tạo hữu cơ TB; tích lũy Tb làm tăng tích tụ và tập trung TB; quá trình tích lũy Tb không ngường làm tăng chênh lệch giữa thu nhập của nhà TB với thu nhập của người lao động làm thuê cả tuyệt đối lẫn tương đối.",
+            "Những nhân tố góp phần làm tăng quy mô tích lũy: trình độ khai thác sức lao động; năn suất lao động xã hội; sử dụng hiệu quả máy móc; đại lượng tư bản ứng trước",
+            "Có 2 hình thức tái sản xuất: tái sx giản đơn và tái sx mở rộng",
+            "Khái niệm về cách mạng công nghiệp? (xem trong giáo trình và bài giảng)",
+            "Khái niệm sức lao động? Hai điều kiện để sức lao động trở thành hàng hóa? Thuộc tính của hàng hóa sức lao động?( Giá trị hàng hóa sức lao động? Giá trị sử dụng của hàng hóa sức lao động?) Khái niệm GTTD? Khái niệm Tư bản khả biến? Khái niệm tư bản bất biến? K/n tiền công? Tuần hoàn của tư bản? Chu chuyển tư bản?Tư bản cố định? Tư bản lưu động?Khối lượng GTTD? Tỷ suất GTTD? Sản xuất GTTD tuyệt đối? Sản xuất GTTD tương đối?Lợi nhuận? Chi phí sản xuất?Tỷ suất lợi suất? Lợi nhuận bình quân? Lợi nhuận thương nghiệp? Lợi tức? Tư bản cho vay? Tỉ suất lợi tức? Địa tô TBCN? ( Xem giáo trình và bài giảng chương 3)",
+            "Xuất khẩu tư bản => xuất khẩu giá trị ra nước ngoài nhằm mục đích chiếm đoạt GTTD và các nguồn lợi nhuận khác ở các nước nhập khẩu tư bản",
+            "Lượng giá trị trong 1 đơn vị hàng hóa tỷ lệ nghịch với năng suất lao động",
+            "Tư bản thương nghiệp => là một bộ phận tư bản công nghiệp tách ra đảm nhận quá trình lưu thông hàng hóa.",
+            "Tăng cường độ lao động, lượng giá trị một đơn vị sản phẩm sẽ không đổi.",
+            "Sản xuất hàng hóa => là kiểu tổ chức kinh tế mà ở đó những người sx ra sản phẩm không nhằm mục đích phục vụ nhu cầu tiêu dùng của chính mình mà để trao đổi, mua bán.",
+            "Khái niệm hàng hóa => là sản phẩm của lao động, có thể thỏa mãn nhu cầu nào đó của con người thông qua trao đổi, mua bán.",
+            "Khái niệm thị trường? Phân loại thị trường? Vai trò thị trường? Khái niệm cơ chế thị trường? Khái niệm nền kinh tế thị trường?Ưu và khuyết tật của nền kinh tế thị trường? (xem chương 2 của giáo trình)",
+            "Một số quy luật kinh tế chủ yếu của nền kinh tế thị trường: Quy luật giá trị; Quy luật cung -cầu; quy luật lưu thông tiền tệ; Quy luật cạnh tranh ( xem cụ thể trong giáo trình và bài giảng)",
+            "Học tất cả các công thức có trong các bài giảng và trong giáo trình",
+            "Giá cả độc quyền => giá cả do các tổc chức độc quyền áp đặt trong mua và bán hàng hóa.",
+            "Các nhân tố ảnh hưởng đến quan hệ lợi ích kinh tế => trình độ phát triển của lực lượng sx; Địa vị của chủ thể trong hệ thống quan hệ sx xã hội; chính sách phân phối thu nhập của nhà nước; Hội nhập kinh tế quốc tế",
+            "Các nhân tố ảnh hưởng đến tỷ suất lợi nhuận =>tỷ suất GTTD; cấu tạo hữu cơ cơ bản; tốc độ chu chuyển của tư bản; tiết kiệm tư bản bất biến.",
+            "Tỷ suất GTTD phản ánh trình độ bóc lột người lao động làm thuê của nhà tư bản; Khối lượng GTTD phản ánh quy mô bóc lột của tư bản."
+        ]
+        
+        // --- 2. BIẾN TRẠNG THÁI VÀ DOM ELEMENTS ---
+        let MASTER_QUESTIONS_DB = []; // [ { id, q, a }, ... ]
+        
+        // CẬP NHẬT: Tách riêng state cho 2 tab trắc nghiệm
+        let sessionQuestions_Main = [];
+        let sessionQuestions_Wrong = [];
+        let answeredQuestions_Main = {};
+        let answeredQuestions_Wrong = {};
+        let correctCount_Main = 0;
+        let correctCount_Wrong = 0;
+
+        let wrongBank = {}; // { "q-id-1": { q, a }, ... }
+
+        // DOM - Tab Chính
+        const mainControls = document.getElementById('main-controls');
+        const quizContainer_Main = document.getElementById('quiz-container-main');
+        const statsCorrect_Main = document.getElementById('stats-correct-main');
+        const statsProgress_Main = document.getElementById('stats-progress-main');
+        
+        // DOM - Tab Trắc nghiệm Câu Sai
+        const quizContainer_Wrong = document.getElementById('quiz-container-wrong');
+        const statsCorrect_Wrong = document.getElementById('stats-correct-wrong');
+        const statsProgress_Wrong = document.getElementById('stats-progress-wrong');
+        
+        // DOM - Tab Danh sách Câu Sai
+        const wrongListContainer = document.getElementById('wrong-list-container');
+        const wrongCount = document.getElementById('wrong-count');
+
+        // DOM - Các Tab
+        const tabBtnQuiz = document.getElementById('tab-btn-quiz');
+        const tabBtnWrongQuiz = document.getElementById('tab-btn-wrong-quiz'); // Mới
+        const tabBtnWrongList = document.getElementById('tab-btn-wrong-list'); // Đổi tên
+        const tabContentQuiz = document.getElementById('tab-content-quiz');
+        const tabContentWrongQuiz = document.getElementById('tab-content-wrong-quiz'); // Mới
+        const tabContentWrongList = document.getElementById('tab-content-wrong-list'); // Đổi tên
+        
+        // --- 3. HÀM KHỞI TẠO VÀ CHUẨN BỊ DỮ LIỆU ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadWrongBank();
+            
+            MASTER_QUESTIONS_DB = RAW_DATA
+                .map((line, index) => {
+                    const parts = line.split('=>');
+                    if (parts.length < 2 || !parts[0] || !parts[1]) return null;
+                    if (parts[1].toLowerCase().includes('(xem giáo trình') || parts[1].toLowerCase().includes('xem chương')) {
+                        return null;
+                    }
+                    return {
+                        id: `q-${index}`,
+                        q: parts[0].trim(),
+                        a: parts[1].trim()
+                    };
+                })
+                .filter(q => q !== null); 
+
+            startNewMainSession(); // Bắt đầu phiên làm việc chính
+            startNewWrongSession(); // Khởi tạo phiên làm việc câu sai (có thể rỗng)
+
+            // Gán sự kiện cho các nút
+            // Nút tab chính
+            document.getElementById('shuffle-all-btn-main').addEventListener('click', () => shuffleAll('main'));
+            document.getElementById('reset-session-btn-main').addEventListener('click', startNewMainSession);
+            document.getElementById('reset-all-btn').addEventListener('click', resetAll);
+            
+            // Nút tab câu sai
+            document.getElementById('shuffle-all-btn-wrong').addEventListener('click', () => shuffleAll('wrong'));
+            document.getElementById('reset-session-btn-wrong').addEventListener('click', startNewWrongSession);
+            
+            // Gán sự kiện cho các Tab
+            tabBtnQuiz.addEventListener('click', () => showTab('quiz'));
+            tabBtnWrongQuiz.addEventListener('click', () => {
+                startNewWrongSession(); // Luôn làm mới khi nhấn vào tab này
+                showTab('wrong-quiz');
+            });
+            tabBtnWrongList.addEventListener('click', () => showTab('wrong-list'));
+        });
+
+        // Phiên làm việc CHÍNH (Toàn bộ câu hỏi)
+        function startNewMainSession() {
+            answeredQuestions_Main = {};
+            correctCount_Main = 0;
+            sessionQuestions_Main = generateSessionQuestions(MASTER_QUESTIONS_DB);
+            renderQuiz('main', sessionQuestions_Main, quizContainer_Main);
+            updateProgress('main');
+            showTab('quiz'); // Đảm bảo tab chính hiển thị
+        }
+
+        // Phiên làm việc CÂU SAI
+        function startNewWrongSession() {
+            const wrongKeys = Object.keys(wrongBank);
+            const wrongMasterList = wrongKeys.map(key => MASTER_QUESTIONS_DB.find(q => q.id === key)).filter(Boolean);
+
+            answeredQuestions_Wrong = {};
+            correctCount_Wrong = 0;
+            sessionQuestions_Wrong = generateSessionQuestions(wrongMasterList);
+            renderQuiz('wrong', sessionQuestions_Wrong, quizContainer_Wrong);
+            updateProgress('wrong');
+        }
+
+
+        function generateSessionQuestions(masterList) {
+            const allAnswers = MASTER_QUESTIONS_DB.map(q => q.a); // Luôn lấy từ DB chính
+
+            return masterList.map(q_item => {
+                const correctAnswer = q_item.a;
+                let wrongAnswer;
+                do {
+                    wrongAnswer = allAnswers[Math.floor(Math.random() * allAnswers.length)];
+                } while (wrongAnswer === correctAnswer); 
+
+                const choices = [
+                    { text: correctAnswer, isCorrect: true },
+                    { text: wrongAnswer, isCorrect: false }
+                ];
+
+                return {
+                    id: q_item.id,
+                    q: q_item.q,
+                    choices: shuffleArray(choices)
+                };
+            });
+        }
+
+        // --- 4. HÀM HIỂN THỊ (RENDER) ---
+
+        // CẬP NHẬT: Hàm render chung
+        function renderQuiz(quizType, questions, container) {
+            container.innerHTML = ''; 
+            if (questions.length === 0) {
+                container.innerHTML = `<p style="color: ${'var(--muted-text)'}; font-style: italic;">${quizType === 'main' ? 'Không có câu hỏi nào.' : 'Tuyệt vời! Bạn không có câu sai nào để ôn tập.'}</p>`;
+                return;
+            }
+            
+            questions.forEach((q, index) => { 
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `${quizType}-${q.id}`; // ID duy nhất cho DOM
+
+                const text = document.createElement('div');
+                text.className = 'question-text';
+                text.textContent = (index + 1) + '. ' + q.q; 
+                card.appendChild(text);
+
+                const grid = document.createElement('div');
+                grid.className = 'answer-grid';
+                
+                q.choices.forEach((choice, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'answer-btn';
+                    btn.textContent = choice.text;
+                    btn.dataset.index = index;
+                    // Quan trọng: Truyền quizType vào hàm xử lý
+                    btn.onclick = () => handleAnswerClick(q.id, choice.isCorrect, btn, quizType);
+                    grid.appendChild(btn);
+                });
+
+                card.appendChild(grid);
+                container.appendChild(card);
+            });
+        }
+
+        function renderWrongBankList() {
+            wrongListContainer.innerHTML = ''; 
+            const keys = Object.keys(wrongBank);
+            wrongCount.textContent = keys.length;
+            
+            if (keys.length === 0) {
+                wrongListContainer.innerHTML = '<p style="color: #6c757d; font-style: italic;">Tuyệt vời! Bạn chưa làm sai câu nào.</p>';
+                return;
+            }
+
+            keys.forEach(key => {
+                const item = wrongBank[key];
+                if (!item) return; // Kiểm tra phòng trường hợp item là null/undefined
+                const el = document.createElement('div');
+                el.className = 'wrong-question-item';
+                el.innerHTML = `<strong>Câu hỏi:</strong> ${escapeHTML(item.q)} <br> <strong>Đáp án đúng:</strong> ${escapeHTML(item.a)}`;
+                wrongListContainer.appendChild(el);
+            });
+        }
+
+        // --- 5. HÀM XỬ LÝ SỰ KIỆN ---
+
+        function handleAnswerClick(qId, isCorrect, clickedButton, quizType) {
+            // Xác định state của tab nào đang được dùng
+            const state_answered = (quizType === 'main') ? answeredQuestions_Main : answeredQuestions_Wrong;
+            
+            if (state_answered[qId]) return; // Đã trả lời trong phiên này
+            state_answered[qId] = true;
+            
+            const card = clickedButton.closest('.question-card');
+            const buttons = card.querySelectorAll('.answer-btn');
+
+            if (isCorrect) {
+                clickedButton.classList.add('correct');
+                if (quizType === 'main') {
+                    correctCount_Main++;
+                } else {
+                    correctCount_Wrong++;
+                }
+            } else {
+                clickedButton.classList.add('wrong');
+                // Hiển thị đáp án đúng
+                const correctBtn = Array.from(buttons).find(b => {
+                    const choiceIndex = parseInt(b.dataset.index, 10);
+                    const sessionList = (quizType === 'main') ? sessionQuestions_Main : sessionQuestions_Wrong;
+                    const question = sessionList.find(q => q.id === qId);
+                    if (!question) return false;
+                    return question.choices[choiceIndex].isCorrect;
+                });
+                if (correctBtn) {
+                    correctBtn.classList.add('correct');
+                }
+                
+                // CẬP NHẬT LOGIC CÂU SAI
+                if (quizType === 'main') {
+                    // Chỉ tab chính mới được thêm vào wrongBank
+                    const masterQ = MASTER_QUESTIONS_DB.find(q => q.id === qId);
+                    if(masterQ && !wrongBank[qId]) { // Chỉ thêm nếu chưa có
+                        wrongBank[qId] = { q: masterQ.q, a: masterQ.a };
+                        saveWrongBank();
+                        renderWrongBankList(); // Cập nhật cả danh sách
+                    }
+                }
+                // Nếu quizType là 'wrong', KHÔNG làm gì cả. Câu sai vẫn nằm trong bank.
+            }
+
+            buttons.forEach(btn => btn.disabled = true);
+            updateProgress(quizType);
+        }
+
+        function updateProgress(quizType) {
+            if (quizType === 'main') {
+                const answeredCount = Object.keys(answeredQuestions_Main).length;
+                const totalQuestions = sessionQuestions_Main.length;
+                statsCorrect_Main.textContent = `${correctCount_Main} / ${answeredCount}`;
+                statsProgress_Main.textContent = `${answeredCount} / ${totalQuestions}`;
+            } else {
+                const answeredCount = Object.keys(answeredQuestions_Wrong).length;
+                const totalQuestions = sessionQuestions_Wrong.length;
+                statsCorrect_Wrong.textContent = `${correctCount_Wrong} / ${answeredCount}`;
+                statsProgress_Wrong.textContent = `${totalQuestions > 0 ? answeredCount : 0} / ${totalQuestions}`;
+            }
+        }
+        
+        function showTab(tabName) {
+            // Ẩn tất cả thanh điều khiển và nội dung
+            mainControls.style.display = 'none';
+            tabContentQuiz.style.display = 'none';
+            tabContentWrongQuiz.style.display = 'none';
+            tabContentWrongList.style.display = 'none';
+            // Tắt active tất cả button
+            tabBtnQuiz.classList.remove('active');
+            tabBtnWrongQuiz.classList.remove('active');
+            tabBtnWrongList.classList.remove('active');
+
+            if (tabName === 'quiz') {
+                mainControls.style.display = 'flex'; // Hiển thị thanh điều khiển chính
+                tabContentQuiz.style.display = 'block';
+                tabBtnQuiz.classList.add('active');
+            } else if (tabName === 'wrong-quiz') {
+                tabContentWrongQuiz.style.display = 'block';
+                tabBtnWrongQuiz.classList.add('active');
+            } else if (tabName === 'wrong-list') {
+                tabContentWrongList.style.display = 'block';
+                tabBtnWrongList.classList.add('active');
+                renderWrongBankList(); // Luôn cập nhật danh sách khi chuyển tab
+            }
+        }
+
+        // --- 6. HÀM CHO CÁC NÚT ĐIỀU KHIỂN ---
+
+        function shuffleAll(quizType) {
+            if (quizType === 'main') {
+                sessionQuestions_Main = shuffleArray(sessionQuestions_Main);
+                sessionQuestions_Main.forEach(q => q.choices = shuffleArray(q.choices));
+                answeredQuestions_Main = {};
+                correctCount_Main = 0;
+                renderQuiz('main', sessionQuestions_Main, quizContainer_Main);
+                updateProgress('main');
+            } else {
+                sessionQuestions_Wrong = shuffleArray(sessionQuestions_Wrong);
+                sessionQuestions_Wrong.forEach(q => q.choices = shuffleArray(q.choices));
+                answeredQuestions_Wrong = {};
+                correctCount_Wrong = 0;
+                renderQuiz('wrong', sessionQuestions_Wrong, quizContainer_Wrong);
+                updateProgress('wrong');
+            }
+        }
+
+        function resetAll() {
+            if (confirm('Bạn có chắc muốn reset TOÀN BỘ? Mọi tiến độ và DANH SÁCH CÂU SAI sẽ bị xóa vĩnh viễn.')) {
+                localStorage.removeItem('ktctWrongBank');
+                wrongBank = {};
+                renderWrongBankList(); // Cập nhật UI tab danh sách câu sai
+                startNewMainSession(); // Quay về session đầy đủ
+                startNewWrongSession(); // Reset luôn cả session câu sai
+            }
+        }
+
+        // --- 7. HÀM LƯU TRỮ VÀ TIỆN ÍCH ---
+
+        function loadWrongBank() {
+            try {
+                const data = localStorage.getItem('ktctWrongBank');
+                if (data) {
+                    wrongBank = JSON.parse(data) || {};
+                } else {
+                    wrongBank = {};
+                }
+            } catch (e) {
+                console.error("Lỗi parse JSON từ localStorage:", e);
+                wrongBank = {};
+            }
+            renderWrongBankList();
+        }
+
+        function saveWrongBank() {
+            localStorage.setItem('ktctWrongBank', JSON.stringify(wrongBank));
+            wrongCount.textContent = Object.keys(wrongBank).length;
+        }
+
+        function shuffleArray(array) {
+            let newArr = [...array]; 
+            let currentIndex = newArr.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [newArr[currentIndex], newArr[randomIndex]] = [
+                    newArr[randomIndex], newArr[currentIndex]];
+            }
+            return newArr;
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[m];
+            });
+        }
+    </script>
+
+</body>
+</html>
+
