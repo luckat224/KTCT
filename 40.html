@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập Kinh tế Chính trị (40 Câu)</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --text-color: #212529; /* Chữ nét hơn */
+            --muted-text: #6c757d;
+            --border-color: #e0e0e0;
+            --correct-bg: #d4edda;
+            --correct-border: #c3e6cb;
+            --wrong-bg: #f8d7da;
+            --wrong-border: #f5c6cb;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .sticky-panel {
+            position: -webkit-sticky; /* Safari */
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        header {
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #fcfcfc;
+            border-radius: 10px 10px 0 0;
+        }
+        h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            justify-content: space-between;
+        }
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            background-color: #fcfcfc;
+        }
+        .progress-stats {
+            flex-grow: 0;
+            display: flex;
+            gap: 15px;
+        }
+        .progress-stats div {
+            font-size: 14px;
+            color: var(--muted-text);
+        }
+        .progress-stats strong {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 2px 5px rgba(0,123,255,0.2);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover { background-color: #5a6268; }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .btn-warning:hover { background-color: #e0a800; }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover { background-color: #c82333; }
+        
+        .tab-button {
+            background-color: #f1f3f5;
+            color: #495057;
+        }
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 0 0 10px 10px;
+            background-color: var(--card-bg);
+        }
+        .quiz-controls-panel {
+            padding: 15px;
+            background-color: #fdfdfd;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .question-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 20px;
+        }
+        .question-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .answer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        /* NÂNG CẤP: Cho 2 cột trên màn hình lớn */
+        @media (min-width: 600px) {
+            .answer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .answer-btn {
+            width: 100%;
+            text-align: left;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1.5;
+            /* Thêm để căn lề nội dung */
+            display: flex;
+            align-items: flex-start;
+            box-sizing: border-box; 
+        }
+        /* Thêm tiền tố A, B, C, D... */
+        .answer-btn::before {
+            content: attr(data-prefix) ". ";
+            font-weight: 600;
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .answer-btn:hover:not(:disabled) {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+        }
+        .answer-btn:disabled {
+            cursor: not-allowed;
+            opacity: 1 !important; /* Buộc không mờ */
+        }
+        .answer-btn.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: #155724;
+            font-weight: 600;
+        }
+        .answer-btn.correct::before {
+            color: #155724;
+        }
+        .answer-btn.wrong {
+            background-color: var(--wrong-bg);
+            border-color: var(--wrong-border);
+            color: #721c24;
+            font-weight: 600;
+        }
+         .answer-btn.wrong::before {
+            color: #721c24;
+        }
+        /* Tab câu sai */
+        .wrong-question-item {
+            font-size: 14px;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            line-height: 1.6;
+        }
+        .wrong-question-item:last-child {
+            border-bottom: none;
+        }
+        .wrong-question-item strong {
+            color: var(--primary-color);
+        }
+        #wrong-list-container:empty::after {
+            content: "Tuyệt vời! Bạn chưa làm sai câu nào.";
+            color: var(--muted-text);
+            font-style: italic;
+        }
+
+        @media (max-width: 700px) {
+            .controls, .quiz-controls-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .progress-stats {
+                justify-content: space-between;
+                width: 100%;
+            }
+            .control-buttons {
+                width: 100%;
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="sticky-panel">
+            <header>
+                <h1>Ôn tập Kinh tế Chính trị (40 Câu)</h1>
+            </header>
+            
+            <div id="main-controls" class="controls">
+                <div class="progress-stats">
+                    <div>
+                        Đúng / Đã làm: <strong id="stats-correct-main">0 / 0</strong>
+                    </div>
+                    <div>
+                        Tiến độ: <strong id="stats-progress-main">0 / 40</strong>
+                    </div>
+                </div>
+                <div class="control-buttons">
+                    <button id="shuffle-all-btn-main" class="btn-primary">Trộn câu hỏi & đáp án</button>
+                    <button id="reset-session-btn-main" class="btn-warning">Reset (Làm lại)</button>
+                    <button id="reset-all-btn" class="btn-danger">Reset Tổng</button>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <button id="tab-btn-quiz" class="tab-button active">Trắc nghiệm (Toàn bộ)</button>
+                <button id="tab-btn-wrong-quiz" class="tab-button">Trắc nghiệm (Câu sai)</button>
+                <button id="tab-btn-wrong-list" class="tab-button">Danh sách Câu Sai (<span id="wrong-count">0</span>)</button>
+            </div>
+        </div>
+
+        <div id="tab-content-quiz" class="tab-content">
+            <div id="quiz-container-main">
+                </div>
+        </div>
+
+        <div id="tab-content-wrong-quiz" class="tab-content" style="display: none;">
+            <div class="quiz-controls-panel">
+                <div class="progress-stats">
+                    <div>
+                        Đúng / Đã làm: <strong id="stats-correct-wrong">0 / 0</strong>
+                    </div>
+                    <div>
+                        Tiến độ: <strong id="stats-progress-wrong">0 / 0</strong>
+                    </div>
+                </div>
+                <div class="control-buttons">
+                    <button id="shuffle-all-btn-wrong" class="btn-primary">Trộn câu hỏi & đáp án</button>
+                    <button id="reset-session-btn-wrong" class="btn-warning">Làm lại (Chỉ câu sai)</button>
+                </div>
+            </div>
+            <div id="quiz-container-wrong">
+                </div>
+        </div>
+        
+        <div id="tab-content-wrong-list" class="tab-content" style="display: none;">
+            <h2>Danh sách các câu đã làm sai (Chỉ xóa khi "Reset Tổng")</h2>
+            <div id="wrong-list-container">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. NGUỒN DỮ LIỆU (40 CÂU HỎI TRẮC NGHIỆM CỦA BẠN) ---
+        // NÂNG CẤP: Thay đổi cấu trúc dữ liệu để hỗ trợ 4 lựa chọn
+        const ALL_QUESTIONS = [
+            {
+                q: "Thời gian lao động cá biệt là thời gian lao động…",
+                choices: [
+                    "Trung bình của xã hội để sản xuất hàng hóa",
+                    "Của mỗi chủ thể trong việc sản xuất hàng hóa",
+                    "Trung bình để tiêu thụ hàng hóa",
+                    "Của ngành sản xuất hàng hóa"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Hao mòn vô hình của tư bản cố định là:",
+                choices: [
+                    "Hao mòn về vật chất, về cơ học có thể nhận thấy",
+                    "Hao mòn đơn thuần về mặt giá trị",
+                    "Hao mòn về giá trị thặng dư",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Lượng giá trị của một đơn vị hàng hóa…",
+                choices: [
+                    "Tỷ lệ nghịch với năng suất lao động",
+                    "Tỷ lệ thuận với năng suất lao động",
+                    "Không phụ thuộc vào năng suất lao động",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 0 // Đáp án A
+            },
+            {
+                q: "Ai là người đầu tiên phát hiện ra tính hai mặt của lao động sản xuất hàng hoá?",
+                choices: [
+                    "A. Smith",
+                    "C. Mác",
+                    "D. Ricacdo",
+                    "Ph. Ăngghen"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "CNTB độc quyền là…",
+                choices: [
+                    "Một giai đoạn phát triển của PTSX TBCN",
+                    "Một hình thái kinh tế- xã hội",
+                    "Một PTSX mới",
+                    "Một nấc thang phát triển của LLSX"
+                ],
+                correctIndex: 0 // Đáp án A
+            },
+            {
+                q: "Phương pháp sản xuất giá trị thặng dư tuyệt đối được áp dụng phổ biến trong giai đoạn:",
+                choices: [
+                    "Trước khi chủ nghĩa tư bản ra đời",
+                    "Trong giai đoạn đầu của chủ nghĩa tư bản",
+                    "Khi chủ nghĩa tư bản đã phát triển đến giai đoạn đại công nghiệp cơ khí",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Thị trường chợ Online có biểu hiện nào?",
+                choices: [
+                    "Nơi người bán quyết định giá cả, người mua chỉ được quyền chọn lựa",
+                    "Nơi người mua được quyền quyết định giá cả của hàng hoá",
+                    "Nơi người mua được lựa chọn và so sánh giá cả của hàng hoá",
+                    "Nơi người mua và người bán trực tiếp thoả thuận giá cả của hàng hoá"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Tư bản khả biến trong quá trình sản xuất sẽ thay đổi như thế nào về mặt lượng?",
+                choices: [
+                    "Không tăng lên",
+                    "Chuyển dần giá trị vào sản phẩm",
+                    "Tăng lên",
+                    "Chuyển nguyên giá trị vào sản phẩm"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Trong chủ nghĩa tư bản độc quyền, vì sao cạnh tranh không bị thủ tiêu?",
+                choices: [
+                    "Vì các xí nghiệp trong nội bộ tổ chức độc quyền cạnh tranh với nhau",
+                    "Vì tổ chức độc quyền cạnh tranh với các công ty ngoài độc quyền",
+                    "Vì các tổ chức độc quyền cạnh tranh với nhau",
+                    "Vì cạnh tranh là quy luật khách quan của kinh tế hàng hoá"
+                ],
+                correctIndex: 3 // Đáp án D
+            },
+            {
+                q: "Chọn phương án đúng nhất: Năng suất lao động phụ thuộc vào các nhân tố:",
+                choices: [
+                    "Trình độ khéo léo của người lao động",
+                    "Sự phát triển và mức độ ứng dụng khoa học - kỹ thuật vào sản xuất",
+                    "Hiệu quả của tư liệu sản xuất",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 3 // Đáp án D
+            },
+            {
+                q: "Nhân tố nào dưới đây KHÔNG ảnh hưởng đến tỉ suất lợi nhuận?",
+                choices: [
+                    "Tỉ suất giá trị thặng dư",
+                    "Cạnh tranh",
+                    "Cấu tạo hữu cơ của tư bản",
+                    "Tốc độ chu chuyển của tư bản"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Sự ra đời của tư bản tài chính là kết quả của sự phát triển…",
+                choices: [
+                    "quá trình xâm nhập liên kết độc quyền ngân hàng với độc quyền",
+                    "sự phát triển của thị trường tài chính",
+                    "độc quyền ngân hàng",
+                    "độc quyền công nghiệp"
+                ],
+                correctIndex: 0 // Đáp án A
+            },
+            {
+                q: "Cấu tạo hữu cơ của tư bản được quyết định bởi:",
+                choices: [
+                    "Cấu tạo kỹ thuật của tư bản",
+                    "Cấu tạo giá trị của tư bản",
+                    "Cấu tạo giá trị thặng dư",
+                    "Cả A, B, C đều sai"
+                ],
+                correctIndex: 0 // Đáp án A
+            },
+            {
+                q: "Trong thời kỳ CNTB độc quyền:",
+                choices: [
+                    "Mâu thuẫn trên có phần dịu đi",
+                    "Mâu thuẫn giữa giai cấp tư sản và vô sản không thay đổi",
+                    "Mâu thuẫn trên ngày càng sâu sắc hơn",
+                    "Đời sống của giai cấp công nhân và nhân dân lao động dần được cải thiện hơn"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Ưu thế của nền kinh tế thị trường là gì?",
+                choices: [
+                    "Đóng vai trò quyết định trong việc phân bổ các nguồn lực và tạo ra các phương thức để thoả mãn tối đa nhu cầu của con người",
+                    "Luôn tạo động lực cho chủ thể kinh tế, phát huy tốt tiềm năng của mọi chủ thể kinh tế và tạo ra các phương thức để thoả mãn tối đa nhu cầu của con người",
+                    "Luôn tạo động lực cho chủ thể kinh tế, phát huy tốt tiềm năng của mọi chủ thể kinh tế và tạo ra sự đa dạng các chủ thể kinh tế",
+                    "Luôn tạo động lực cho chủ thể kinh tế, thị trường đóng vai trò quyết định trong việc phân bổ các nguồn lực và tạo ra các phương thức để thoả mãn tối đa nhu cầu của con người"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Tỉ suất giá trị thặng dư biểu hiện…",
+                choices: [
+                    "phạm vi bóc lột của tư bản đối với lao động làm thuê",
+                    "quy mô bóc lột của tư bản đối với lao động làm thuê",
+                    "tính chất bóc lột của tư bản đối với lao động làm thuê",
+                    "trình độ bóc lột của tư bản đối với lao động làm thuê"
+                ],
+                correctIndex: 3 // Đáp án D
+            },
+            {
+                q: "Nhân tố ảnh hưởng đến giá trị xã hội của hàng hóa là...",
+                choices: [
+                    "Năng suất lao động",
+                    "Năng suất lao động cá biệt",
+                    "Năng suất lao động xã hội",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Để tăng cường bóc lột giá trị thặng dư tương đối cần phải…",
+                choices: [
+                    "kéo dài thời gian lao động trong các ngành sản xuất ra tư liệu sinh hoạt",
+                    "tăng năng suất lao động trong các ngành sản xuất ra tư liệu sinh hoạt",
+                    "tăng cường độ lao động trong các ngành sản xuất ra tư liệu sinh hoạt",
+                    "cải tiến kĩ thuật, tăng năng suất lao động"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Chọn phương án đúng nhất: Vai trò của máy móc trong quá trình tạo ra giá trị thặng dư là gì?",
+                choices: [
+                    "Máy móc là yếu tố quyết định tạo ra giá trị thặng dư",
+                    "Máy móc và sức lao động đều tạo ra giá trị thặng dư",
+                    "Máy móc là tiền đề vật chất cho việc tạo ra giá trị thặng dư",
+                    "Máy móc là nguồn gốc của giá trị thặng dư"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Khẳng định nào dưới đây KHÔNG đúng về tư bản cố định?",
+                choices: [
+                    "Tư bản cố định là nguồn gốc của giá trị thặng dư",
+                    "Tư bản cố định là bộ phận chủ yếu của tư bản bất biến",
+                    "Tư bản cố định là điều kiện để giảm giá trị hàng hoá",
+                    "Tư bản cố định là điều kiện tăng năng suất lao động"
+                ],
+                correctIndex: 0 // Đáp án A
+            },
+            {
+                q: "Đâu là một trong những biểu hiện của chủ nghĩa tư bản độc quyền nhà nước?",
+                choices: [
+                    "Xuất khẩu tư bản",
+                    "Tích tụ, tập trung tư bản và các hình thức tổ chức độc quyền",
+                    "Tư bản tài chính và đầu sỏ tài chính",
+                    "Sự kết hợp về nhân sự giữa tổ chức độc quyền và nhà nước tư sản"
+                ],
+                correctIndex: 3 // Đáp án D
+            },
+            {
+                q: "Mâu thuẫn của công thức chung tư bản (T - H - T’) là:",
+                choices: [
+                    "Giá trị thặng dư vừa được tạo ra trong sản xuất vừa được tạo ra trong lưu thông",
+                    "Giá trị thặng dư không sinh ra trong lưu thông nhưng cũng không nằm ngoài lưu thông",
+                    "Giá trị thặng dư được tạo ra trong lưu thông, không tạo ra trong sản xuất",
+                    "Giá trị thặng dư không được tạo ra trong sản xuất, cũng không tạo ra trong lưu thông"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Điểm giống nhau giữa tích tụ và tập trung tư bản là:",
+                choices: [
+                    "Đều có cùng nguồn gốc trực tiếp",
+                    "Đều làm tăng quy mô của tư bản xã hội",
+                    "Đều làm tăng quy mô của tư bản cá biệt",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Chọn phương án đúng nhất: Trong điều kiện nền kinh tế thị trường hiện nay, một số hàng hoá đặc biệt gồm có…",
+                choices: [
+                    "quyền sử dụng đất đai, thương hiệu và hàng hoá tư liệu sản xuất",
+                    "quyền sử dụng đất đai, thương hiệu, chứng khoán và một số giấy tờ có giá khác",
+                    "thương hiệu, hàng hoá tư liệu tiêu dùng, chứng khoán và một số giấy tờ có giá khác",
+                    "quyền sử dụng đất đai, thương hiệu, chứng khoán và một số giấy tờ có giá khác, hàng hoá nông phẩm"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Khẳng định nào sau đây thể hiện đúng mối quan hệ giữa giá cả và giá trị?",
+                choices: [
+                    "Giá cả còn chịu ảnh hưởng của quy luật cung - cầu và giá trị của tiền",
+                    "Giá trị là hình thức biểu hiện bằng tiền của giá cả",
+                    "Giá trị là cơ sở của giá cả, là yếu tố quyết định của giá cả",
+                    "Giá cả còn chịu ảnh hưởng của quy luật cạnh tranh và giá trị của tiền"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Tư bản thương nghiệp là một bộ phận của:",
+                choices: [
+                    "Tư bản cho vay",
+                    "Tư bản công nghiệp",
+                    "Tư bản tài chính",
+                    "Tư bản giả"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Giá trị sử dụng hàng hoá sức lao động…",
+                choices: [
+                    "Thoả mãn nhu cầu của người mua nó",
+                    "Công dụng của hàng hoá sức lao động",
+                    "Tính có ích của hàng hoá sức lao động",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 3 // Đáp án D
+            },
+            {
+                q: "Thực hiện chức năng thước đo giá trị, tiền được dùng để…",
+                choices: [
+                    "làm phương tiện mua hàng hoá",
+                    "đo lường biểu hiện giá trị của các hàng hoá khác",
+                    "làm phương tiện nộp thuế",
+                    "làm phương tiện trả nợ"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Mục đích của cạnh tranh trong nội bộ ngành là gì?",
+                choices: [
+                    "Thu được lợi nhuận siêu ngạch",
+                    "Đổi mới công nghệ",
+                    "Nhằm thu nhiều lợi nhuận nhất",
+                    "Nhằm mua bán hàng hoá với giá cả có lợi nhất"
+                ],
+                correctIndex: 0 // Đáp án A
+            },
+            {
+                q: "Yếu tố nào sau đây KHÔNG thuộc tư bản bất biến?",
+                choices: [
+                    "Kết cấu hạ tầng sản xuất",
+                    "Máy móc, thiết bị, nhà xưởng",
+                    "Nguyên liệu",
+                    "Tiền lương"
+                ],
+                correctIndex: 3 // Đáp án D
+            },
+            {
+                q: "Chọn đáp án đúng nhất, cuộc khủng hoảng kinh tế 1873 làm phá sản hàng loạt các xí nghiệp:",
+                choices: [
+                    "Lớn và nhỏ",
+                    "Lớn và vừa",
+                    "Vừa và nhỏ",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Hình thái tiền tệ ra đời khi…",
+                choices: [
+                    "Vật ngang giá chung được cố định ở vàng, bạc",
+                    "Vật ngang giá chung chưa được cố định ở một hàng hóa cụ thể",
+                    "Nhu cầu trao đổi vượt ra khỏi phạm vi quốc gia",
+                    "Cả A, B, C đều sai"
+                ],
+                correctIndex: 0 // Đáp án A
+            },
+            {
+                q: "Cạnh tranh giữa các ngành xảy ra khi có sự khác nhau về yếu tố nào?",
+                choices: [
+                    "Lợi nhuận khác nhau",
+                    "Tỉ suất lợi nhuận",
+                    "Giá trị thặng dư siêu ngạch",
+                    "Cung - cầu các loại hàng hoá"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "“Chế độ tham dự” của tư bản tài chính được thiết lập do…",
+                choices: [
+                    "số cổ phiếu khống chế nắm công ty mẹ, con, cháu",
+                    "yêu cầu của các tổ chức độc quyền công nghiệp",
+                    "quyết định của nhà nước",
+                    "yêu cầu tổ chức của các ngân hàng"
+                ],
+                correctIndex: 0 // Đáp án A
+            },
+            {
+                q: "Phân công lao động xã hội làm cho những người sản xuất hàng hóa…",
+                choices: [
+                    "đối lập với nhau",
+                    "phụ thuộc vào nhau",
+                    "độc lập với nhau",
+                    "tách rời nhau"
+                ],
+                correctIndex: 1 // Đáp án B
+            },
+            {
+                q: "Phương thức sản xuất TBCN có những giai đoạn nào?",
+                choices: [
+                    "CNTB hiện đại và CNTB tự do cạnh tranh",
+                    "CNTB ngày nay và CNTB độc quyền",
+                    "CNTB tự do cạnh tranh và CNTB độc quyền",
+                    "CNTB hiện đại và CNTB độc quyền"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Vàng có thể đóng vai trò tiền tệ, bởi vì…",
+                choices: [
+                    "Là kim loại quý, hiếm",
+                    "Dễ chia nhỏ, dễ dát mỏng, với một lượng nhỏ nhưng có giá trị lớn",
+                    "Ít hao mòn, khó hư hỏng, thuận tiện cho quá trình trao đổi",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 3 // Đáp án D
+            },
+            {
+                q: "Chọn phương án đúng về thứ tự từ thấp đến cao của các hình thức tổ chức độc quyền?",
+                choices: [
+                    "Cartel, syndicate, trust, consortium",
+                    "Syndicate, cartel, trust, consortium",
+                    "Trust, cartel, syndicate, consortium",
+                    "Cartel, consortium, syndicate, trust"
+                ],
+                correctIndex: 0 // Đáp án A
+            },
+            {
+                q: "Thời gian lao động trong ngày của công nhân chia làm hai phần:",
+                choices: [
+                    "Thời gian lao động và thời gian lao động thặng dư",
+                    "Thời gian lao động và thời gian lao động tất yếu",
+                    "Thời gian lao động tất yếu và thời gian lao động thặng dư",
+                    "Cả A, B, C"
+                ],
+                correctIndex: 2 // Đáp án C
+            },
+            {
+                q: "Lao động trừu tượng là nguồn gốc của…",
+                choices: [
+                    "giá trị",
+                    "của cải",
+                    "giá trị trao đổi",
+                    "giá trị cá biệt"
+                ],
+                correctIndex: 0 // Đáp án A
+            }
+        ];
+        
+        // --- 2. BIẾN TRẠNG THÁI VÀ DOM ELEMENTS ---
+        let MASTER_QUESTIONS_DB = []; // [ { id, q, choices: [], correctIndex }, ... ]
+        
+        let sessionQuestions_Main = [];
+        let sessionQuestions_Wrong = [];
+        let answeredQuestions_Main = {};
+        let answeredQuestions_Wrong = {};
+        let correctCount_Main = 0;
+        let correctCount_Wrong = 0;
+
+        let wrongBank = {}; // { "q-id-1": { q, a (text) }, ... }
+
+        // DOM - Tab Chính
+        const mainControls = document.getElementById('main-controls');
+        const quizContainer_Main = document.getElementById('quiz-container-main');
+        const statsCorrect_Main = document.getElementById('stats-correct-main');
+        const statsProgress_Main = document.getElementById('stats-progress-main');
+        
+        // DOM - Tab Trắc nghiệm Câu Sai
+        const quizContainer_Wrong = document.getElementById('quiz-container-wrong');
+        const statsCorrect_Wrong = document.getElementById('stats-correct-wrong');
+        const statsProgress_Wrong = document.getElementById('stats-progress-wrong');
+        
+        // DOM - Tab Danh sách Câu Sai
+        const wrongListContainer = document.getElementById('wrong-list-container');
+        const wrongCount = document.getElementById('wrong-count');
+
+        // DOM - Các Tab
+        const tabBtnQuiz = document.getElementById('tab-btn-quiz');
+        const tabBtnWrongQuiz = document.getElementById('tab-btn-wrong-quiz');
+        const tabBtnWrongList = document.getElementById('tab-btn-wrong-list');
+        const tabContentQuiz = document.getElementById('tab-content-quiz');
+        const tabContentWrongQuiz = document.getElementById('tab-content-wrong-quiz');
+        const tabContentWrongList = document.getElementById('tab-content-wrong-list');
+        
+        // --- 3. HÀM KHỞI TẠO VÀ CHUẨN BỊ DỮ LIỆU ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadWrongBank();
+            
+            // NÂNG CẤP: Gán ID cho 40 câu hỏi đã hardcode
+            MASTER_QUESTIONS_DB = ALL_QUESTIONS.map((q, index) => ({
+                ...q,
+                id: `q-${index}`
+            }));
+
+            startNewMainSession(); 
+            startNewWrongSession(); 
+
+            // Gán sự kiện cho các nút
+            document.getElementById('shuffle-all-btn-main').addEventListener('click', () => shuffleAll('main'));
+            document.getElementById('reset-session-btn-main').addEventListener('click', startNewMainSession);
+            document.getElementById('reset-all-btn').addEventListener('click', resetAll);
+            
+            document.getElementById('shuffle-all-btn-wrong').addEventListener('click', () => shuffleAll('wrong'));
+            document.getElementById('reset-session-btn-wrong').addEventListener('click', startNewWrongSession);
+            
+            // Gán sự kiện cho các Tab
+            tabBtnQuiz.addEventListener('click', () => showTab('quiz'));
+            tabBtnWrongQuiz.addEventListener('click', () => {
+                startNewWrongSession(); 
+                showTab('wrong-quiz');
+            });
+            tabBtnWrongList.addEventListener('click', () => showTab('wrong-list'));
+        });
+
+        // Phiên làm việc CHÍNH (Toàn bộ câu hỏi)
+        function startNewMainSession() {
+            answeredQuestions_Main = {};
+            correctCount_Main = 0;
+            sessionQuestions_Main = generateSessionQuestions(MASTER_QUESTIONS_DB); // Tạo session từ 40 câu
+            renderQuiz('main', sessionQuestions_Main, quizContainer_Main);
+            updateProgress('main');
+            showTab('quiz'); 
+        }
+
+        // Phiên làm việc CÂU SAI
+        function startNewWrongSession() {
+            const wrongKeys = Object.keys(wrongBank);
+            // Lấy câu hỏi đầy đủ từ MASTER_DB dựa trên các ID đã lưu
+            const wrongMasterList = wrongKeys.map(key => MASTER_QUESTIONS_DB.find(q => q.id === key)).filter(Boolean);
+
+            answeredQuestions_Wrong = {};
+            correctCount_Wrong = 0;
+            sessionQuestions_Wrong = generateSessionQuestions(wrongMasterList); // Tạo session từ các câu sai
+            renderQuiz('wrong', sessionQuestions_Wrong, quizContainer_Wrong);
+            updateProgress('wrong');
+        }
+
+        // NÂNG CẤP: Hàm này tạo ra 4 lựa chọn (đã shuffle) thay vì 2
+        function generateSessionQuestions(masterList) {
+            return masterList.map(q_item => {
+                // q_item là { id, q, choices: ["A", "B", "C", "D"], correctIndex: 1 }
+                
+                // Chuyển đổi mảng string thành mảng object
+                const formattedChoices = q_item.choices.map((choiceText, index) => {
+                    return {
+                        text: choiceText,
+                        isCorrect: (index === q_item.correctIndex)
+                    };
+                });
+
+                return {
+                    id: q_item.id,
+                    q: q_item.q,
+                    choices: shuffleArray(formattedChoices) // Trộn 4 lựa chọn
+                };
+            });
+        }
+
+        // --- 4. HÀM HIỂN THỊ (RENDER) ---
+
+        function renderQuiz(quizType, questions, container) {
+            container.innerHTML = ''; 
+            if (questions.length === 0) {
+                container.innerHTML = `<p style="color: ${'var(--muted-text)'}; font-style: italic;">${quizType === 'main' ? 'Không có câu hỏi nào.' : 'Tuyệt vời! Bạn không có câu sai nào để ôn tập.'}</p>`;
+                return;
+            }
+            
+            const choicePrefixes = ['A', 'B', 'C', 'D']; // Tiền tố cho A, B, C, D
+
+            questions.forEach((q, index) => { 
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `${quizType}-${q.id}`; 
+
+                const text = document.createElement('div');
+                text.className = 'question-text';
+                text.textContent = (index + 1) + '. ' + q.q; 
+                card.appendChild(text);
+
+                const grid = document.createElement('div');
+                grid.className = 'answer-grid';
+                
+                // NÂNG CẤP: Lặp qua 4 lựa chọn đã trộn
+                q.choices.forEach((choice, choiceIndex) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'answer-btn';
+                    btn.innerHTML = `<span>${choice.text}</span>`; // Dùng innerHTML để text xuống dòng nếu cần
+                    
+                    // Thêm tiền tố A, B, C, D
+                    btn.dataset.prefix = choicePrefixes[choiceIndex]; 
+                    
+                    btn.dataset.isCorrect = choice.isCorrect; // Lưu trữ trạng thái đúng/sai
+                    
+                    btn.onclick = () => handleAnswerClick(q.id, choice.isCorrect, btn, quizType);
+                    grid.appendChild(btn);
+                });
+
+                card.appendChild(grid);
+                container.appendChild(card);
+            });
+        }
+
+        function renderWrongBankList() {
+            wrongListContainer.innerHTML = ''; 
+            const keys = Object.keys(wrongBank);
+            wrongCount.textContent = keys.length;
+            
+            if (keys.length === 0) {
+                wrongListContainer.innerHTML = '<p style="color: #6c757d; font-style: italic;">Tuyệt vời! Bạn chưa làm sai câu nào.</p>';
+                return;
+            }
+
+            keys.forEach(key => {
+                const item = wrongBank[key];
+                if (!item) return; 
+                const el = document.createElement('div');
+                el.className = 'wrong-question-item';
+                // item.a bây giờ là text của câu trả lời đúng
+                el.innerHTML = `<strong>Câu hỏi:</strong> ${escapeHTML(item.q)} <br> <strong>Đáp án đúng:</strong> ${escapeHTML(item.a)}`;
+                wrongListContainer.appendChild(el);
+            });
+        }
+
+        // --- 5. HÀM XỬ LÝ SỰ KIỆN ---
+
+        // NÂNG CẤP: Hàm này vẫn hoạt động tốt với 4 lựa chọn
+        function handleAnswerClick(qId, isCorrect, clickedButton, quizType) {
+            const state_answered = (quizType === 'main') ? answeredQuestions_Main : answeredQuestions_Wrong;
+            
+            if (state_answered[qId]) return; 
+            state_answered[qId] = true;
+            
+            const card = clickedButton.closest('.question-card');
+            const buttons = card.querySelectorAll('.answer-btn');
+
+            if (isCorrect) {
+                clickedButton.classList.add('correct');
+                if (quizType === 'main') {
+                    correctCount_Main++;
+                } else {
+                    correctCount_Wrong++;
+                }
+            } else {
+                clickedButton.classList.add('wrong');
+                // Hiển thị đáp án đúng
+                const correctBtn = Array.from(buttons).find(b => b.dataset.isCorrect === 'true');
+                if (correctBtn) {
+                    correctBtn.classList.add('correct');
+                }
+                
+                // LOGIC CÂU SAI
+                if (quizType === 'main') {
+                    const masterQ = MASTER_QUESTIONS_DB.find(q => q.id === qId);
+                    if(masterQ && !wrongBank[qId]) { 
+                        // Lưu text của câu trả lời đúng
+                        const correctAnswerText = masterQ.choices[masterQ.correctIndex];
+                        wrongBank[qId] = { q: masterQ.q, a: correctAnswerText };
+                        saveWrongBank();
+                        renderWrongBankList(); 
+                    }
+                }
+            }
+
+            buttons.forEach(btn => btn.disabled = true);
+            updateProgress(quizType);
+        }
+
+        function updateProgress(quizType) {
+            if (quizType === 'main') {
+                const answeredCount = Object.keys(answeredQuestions_Main).length;
+                const totalQuestions = sessionQuestions_Main.length;
+                statsCorrect_Main.textContent = `${correctCount_Main} / ${answeredCount}`;
+                statsProgress_Main.textContent = `${answeredCount} / ${totalQuestions}`;
+            } else {
+                const answeredCount = Object.keys(answeredQuestions_Wrong).length;
+                const totalQuestions = sessionQuestions_Wrong.length;
+                statsCorrect_Wrong.textContent = `${correctCount_Wrong} / ${answeredCount}`;
+                statsProgress_Wrong.textContent = `${totalQuestions > 0 ? answeredCount : 0} / ${totalQuestions}`;
+            }
+        }
+        
+        function showTab(tabName) {
+            mainControls.style.display = 'none';
+            tabContentQuiz.style.display = 'none';
+            tabContentWrongQuiz.style.display = 'none';
+            tabContentWrongList.style.display = 'none';
+            
+            tabBtnQuiz.classList.remove('active');
+            tabBtnWrongQuiz.classList.remove('active');
+            tabBtnWrongList.classList.remove('active');
+
+            if (tabName === 'quiz') {
+                mainControls.style.display = 'flex'; 
+                tabContentQuiz.style.display = 'block';
+                tabBtnQuiz.classList.add('active');
+            } else if (tabName === 'wrong-quiz') {
+                tabContentWrongQuiz.style.display = 'block';
+                tabBtnWrongQuiz.classList.add('active');
+            } else if (tabName === 'wrong-list') {
+                tabContentWrongList.style.display = 'block';
+                tabBtnWrongList.classList.add('active');
+                renderWrongBankList(); 
+            }
+        }
+
+        // --- 6. HÀM CHO CÁC NÚT ĐIỀU KHIỂN ---
+
+        function shuffleAll(quizType) {
+            if (quizType === 'main') {
+                sessionQuestions_Main = shuffleArray(sessionQuestions_Main); // Trộn thứ tự câu hỏi
+                sessionQuestions_Main.forEach(q => q.choices = shuffleArray(q.choices)); // Trộn thứ tự đáp án
+                answeredQuestions_Main = {};
+                correctCount_Main = 0;
+                renderQuiz('main', sessionQuestions_Main, quizContainer_Main);
+                updateProgress('main');
+            } else {
+                sessionQuestions_Wrong = shuffleArray(sessionQuestions_Wrong);
+                sessionQuestions_Wrong.forEach(q => q.choices = shuffleArray(q.choices));
+                answeredQuestions_Wrong = {};
+                correctCount_Wrong = 0;
+                renderQuiz('wrong', sessionQuestions_Wrong, quizContainer_Wrong);
+                updateProgress('wrong');
+            }
+        }
+
+        function resetAll() {
+            if (confirm('Bạn có chắc muốn reset TOÀN BỘ? Mọi tiến độ và DANH SÁCH CÂU SAI sẽ bị xóa vĩnh viễn.')) {
+                localStorage.removeItem('ktctWrongBank');
+                wrongBank = {};
+                renderWrongBankList(); 
+                startNewMainSession(); 
+                startNewWrongSession(); 
+            }
+        }
+
+        // --- 7. HÀM LƯU TRỮ VÀ TIỆN ÍCH ---
+
+        function loadWrongBank() {
+            try {
+                const data = localStorage.getItem('ktctWrongBank');
+                if (data) {
+                    wrongBank = JSON.parse(data) || {};
+                } else {
+                    wrongBank = {};
+                }
+            } catch (e) {
+                console.error("Lỗi parse JSON từ localStorage:", e);
+                wrongBank = {};
+            }
+            renderWrongBankList();
+        }
+
+        function saveWrongBank() {
+            localStorage.setItem('ktctWrongBank', JSON.stringify(wrongBank));
+            wrongCount.textContent = Object.keys(wrongBank).length;
+        }
+
+        function shuffleArray(array) {
+            let newArr = [...array]; 
+            let currentIndex = newArr.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [newArr[currentIndex], newArr[randomIndex]] = [
+                    newArr[randomIndex], newArr[currentIndex]];
+            }
+            return newArr;
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[m];
+            });
+        }
+    </script>
+
+</body>
+</html>
