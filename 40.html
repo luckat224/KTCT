@@ -326,7 +326,6 @@
 
     <script>
         // --- 1. NGUỒN DỮ LIỆU (40 CÂU HỎI TRẮC NGHIỆM CỦA BẠN) ---
-        // NÂNG CẤP: Thay đổi cấu trúc dữ liệu để hỗ trợ 4 lựa chọn
         const ALL_QUESTIONS = [
             {
                 q: "Thời gian lao động cá biệt là thời gian lao động…",
@@ -731,11 +730,16 @@
         ];
         
         // --- 2. BIẾN TRẠNG THÁI VÀ DOM ELEMENTS ---
+        
+        // CẬP NHẬT: Thêm 2 hằng số để lưu localStorage
+        const WRONG_BANK_KEY = 'ktctWrongBank_40'; // Key cho ngân hàng câu sai
+        const MAIN_PROGRESS_KEY = 'ktctMainProgress_40'; // Key cho tiến độ bài làm chính
+
         let MASTER_QUESTIONS_DB = []; // [ { id, q, choices: [], correctIndex }, ... ]
         
         let sessionQuestions_Main = [];
         let sessionQuestions_Wrong = [];
-        let answeredQuestions_Main = {};
+        let answeredQuestions_Main = {}; // CẬP NHẬT: Sẽ được tải từ localStorage
         let answeredQuestions_Wrong = {};
         let correctCount_Main = 0;
         let correctCount_Wrong = 0;
@@ -768,20 +772,28 @@
         // --- 3. HÀM KHỞI TẠO VÀ CHUẨN BỊ DỮ LIỆU ---
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadWrongBank();
+            loadWrongBank(); // Tải ngân hàng câu sai
             
-            // NÂNG CẤP: Gán ID cho 40 câu hỏi đã hardcode
             MASTER_QUESTIONS_DB = ALL_QUESTIONS.map((q, index) => ({
                 ...q,
                 id: `q-${index}`
             }));
 
-            startNewMainSession(); 
-            startNewWrongSession(); 
+            startNewMainSession(); // Bắt đầu phiên chính (sẽ tự động tải tiến độ)
+            startNewWrongSession(); // Khởi tạo phiên câu sai
 
             // Gán sự kiện cho các nút
             document.getElementById('shuffle-all-btn-main').addEventListener('click', () => shuffleAll('main'));
-            document.getElementById('reset-session-btn-main').addEventListener('click', startNewMainSession);
+            
+            // CẬP NHẬT: Nút "Reset (Làm lại)" giờ sẽ xóa tiến độ phiên chính
+            document.getElementById('reset-session-btn-main').addEventListener('click', () => {
+                if (confirm('Bạn có chắc muốn làm lại bài thi này? Tiến độ hiện tại (chỉ của 40 câu này) sẽ bị xóa.')) {
+                    localStorage.removeItem(MAIN_PROGRESS_KEY); // Xóa tiến độ đã lưu
+                    answeredQuestions_Main = {}; // Reset state
+                    startNewMainSession(); // Bắt đầu lại (sẽ tải state rỗng)
+                }
+            });
+            
             document.getElementById('reset-all-btn').addEventListener('click', resetAll);
             
             document.getElementById('shuffle-all-btn-wrong').addEventListener('click', () => shuffleAll('wrong'));
@@ -796,12 +808,24 @@
             tabBtnWrongList.addEventListener('click', () => showTab('wrong-list'));
         });
 
-        // Phiên làm việc CHÍNH (Toàn bộ câu hỏi)
+        // CẬP NHẬT: Phiên làm việc CHÍNH
         function startNewMainSession() {
-            answeredQuestions_Main = {};
-            correctCount_Main = 0;
-            sessionQuestions_Main = generateSessionQuestions(MASTER_QUESTIONS_DB); // Tạo session từ 40 câu
+            loadMainProgress(); // Tải tiến độ đã lưu (answeredQuestions_Main)
+            correctCount_Main = 0; 
+            
+            // Luôn tạo câu hỏi theo thứ tự chuẩn, việc trộn là một hành động riêng
+            sessionQuestions_Main = generateSessionQuestions(MASTER_QUESTIONS_DB); 
+
+            // Tính toán lại số câu đúng dựa trên tiến độ đã tải
+            Object.keys(answeredQuestions_Main).forEach(qId => {
+                const answerState = answeredQuestions_Main[qId]; // { isCorrect, clickedText }
+                if (answerState && answerState.isCorrect) {
+                    correctCount_Main++;
+                }
+            });
+
             renderQuiz('main', sessionQuestions_Main, quizContainer_Main);
+            restoreAnsweredState('main', sessionQuestions_Main, quizContainer_Main); // Phục hồi trạng thái
             updateProgress('main');
             showTab('quiz'); 
         }
@@ -809,7 +833,6 @@
         // Phiên làm việc CÂU SAI
         function startNewWrongSession() {
             const wrongKeys = Object.keys(wrongBank);
-            // Lấy câu hỏi đầy đủ từ MASTER_DB dựa trên các ID đã lưu
             const wrongMasterList = wrongKeys.map(key => MASTER_QUESTIONS_DB.find(q => q.id === key)).filter(Boolean);
 
             answeredQuestions_Wrong = {};
@@ -819,12 +842,8 @@
             updateProgress('wrong');
         }
 
-        // NÂNG CẤP: Hàm này tạo ra 4 lựa chọn (đã shuffle) thay vì 2
         function generateSessionQuestions(masterList) {
             return masterList.map(q_item => {
-                // q_item là { id, q, choices: ["A", "B", "C", "D"], correctIndex: 1 }
-                
-                // Chuyển đổi mảng string thành mảng object
                 const formattedChoices = q_item.choices.map((choiceText, index) => {
                     return {
                         text: choiceText,
@@ -832,10 +851,12 @@
                     };
                 });
 
+                // CẬP NHẬT: Không trộn đáp án ở đây. Việc trộn sẽ do nút "Trộn" xử lý.
+                // Điều này đảm bảo thứ tự đáp án nhất quán khi tải lại trang.
                 return {
                     id: q_item.id,
                     q: q_item.q,
-                    choices: shuffleArray(formattedChoices) // Trộn 4 lựa chọn
+                    choices: formattedChoices 
                 };
             });
         }
@@ -849,7 +870,7 @@
                 return;
             }
             
-            const choicePrefixes = ['A', 'B', 'C', 'D']; // Tiền tố cho A, B, C, D
+            const choicePrefixes = ['A', 'B', 'C', 'D']; 
 
             questions.forEach((q, index) => { 
                 const card = document.createElement('div');
@@ -864,16 +885,13 @@
                 const grid = document.createElement('div');
                 grid.className = 'answer-grid';
                 
-                // NÂNG CẤP: Lặp qua 4 lựa chọn đã trộn
                 q.choices.forEach((choice, choiceIndex) => {
                     const btn = document.createElement('button');
                     btn.className = 'answer-btn';
-                    btn.innerHTML = `<span>${choice.text}</span>`; // Dùng innerHTML để text xuống dòng nếu cần
+                    btn.innerHTML = `<span>${choice.text}</span>`; 
                     
-                    // Thêm tiền tố A, B, C, D
                     btn.dataset.prefix = choicePrefixes[choiceIndex]; 
-                    
-                    btn.dataset.isCorrect = choice.isCorrect; // Lưu trữ trạng thái đúng/sai
+                    btn.dataset.isCorrect = choice.isCorrect; 
                     
                     btn.onclick = () => handleAnswerClick(q.id, choice.isCorrect, btn, quizType);
                     grid.appendChild(btn);
@@ -899,20 +917,70 @@
                 if (!item) return; 
                 const el = document.createElement('div');
                 el.className = 'wrong-question-item';
-                // item.a bây giờ là text của câu trả lời đúng
                 el.innerHTML = `<strong>Câu hỏi:</strong> ${escapeHTML(item.q)} <br> <strong>Đáp án đúng:</strong> ${escapeHTML(item.a)}`;
                 wrongListContainer.appendChild(el);
             });
         }
 
+        // CẬP NHẬT: Hàm mới để phục hồi trạng thái các câu đã trả lời
+        function restoreAnsweredState(quizType, sessionQuestions, container) {
+            if (quizType !== 'main') return; // Chỉ phục hồi cho tab chính
+
+            Object.keys(answeredQuestions_Main).forEach(qId => {
+                const answerState = answeredQuestions_Main[qId]; // { isCorrect, clickedText }
+                if (!answerState) return;
+
+                const card = container.querySelector(`#${quizType}-${qId}`);
+                if (!card) return;
+
+                const buttons = card.querySelectorAll('.answer-btn');
+                let correctBtn = null;
+                let clickedBtn = null;
+
+                // Tìm nút đúng và nút đã bấm
+                buttons.forEach(btn => {
+                    const btnText = btn.querySelector('span').textContent;
+                    const isBtnCorrect = btn.dataset.isCorrect === 'true';
+
+                    if (isBtnCorrect) {
+                        correctBtn = btn;
+                    }
+                    if (btnText === answerState.clickedText) {
+                        clickedBtn = btn;
+                    }
+                });
+
+                // Áp dụng style
+                if (answerState.isCorrect) {
+                    if (clickedBtn) {
+                        clickedBtn.classList.add('correct');
+                    }
+                } else {
+                    // Trả lời sai
+                    if (clickedBtn) {
+                        clickedBtn.classList.add('wrong');
+                    }
+                    if (correctBtn) {
+                        correctBtn.classList.add('correct');
+                    }
+                }
+                
+                // Vô hiệu hóa tất cả nút của câu này
+                buttons.forEach(btn => btn.disabled = true);
+            });
+        }
+
         // --- 5. HÀM XỬ LÝ SỰ KIỆN ---
 
-        // NÂNG CẤP: Hàm này vẫn hoạt động tốt với 4 lựa chọn
+        // CẬP NHẬT: handleAnswerClick để lưu tiến độ
         function handleAnswerClick(qId, isCorrect, clickedButton, quizType) {
             const state_answered = (quizType === 'main') ? answeredQuestions_Main : answeredQuestions_Wrong;
             
             if (state_answered[qId]) return; 
-            state_answered[qId] = true;
+            
+            // CẬP NHẬT: Lưu cả text đã chọn
+            const choiceText = clickedButton.querySelector('span').textContent;
+            state_answered[qId] = { isCorrect: isCorrect, clickedText: choiceText };
             
             const card = clickedButton.closest('.question-card');
             const buttons = card.querySelectorAll('.answer-btn');
@@ -926,17 +994,14 @@
                 }
             } else {
                 clickedButton.classList.add('wrong');
-                // Hiển thị đáp án đúng
                 const correctBtn = Array.from(buttons).find(b => b.dataset.isCorrect === 'true');
                 if (correctBtn) {
                     correctBtn.classList.add('correct');
                 }
                 
-                // LOGIC CÂU SAI
                 if (quizType === 'main') {
                     const masterQ = MASTER_QUESTIONS_DB.find(q => q.id === qId);
                     if(masterQ && !wrongBank[qId]) { 
-                        // Lưu text của câu trả lời đúng
                         const correctAnswerText = masterQ.choices[masterQ.correctIndex];
                         wrongBank[qId] = { q: masterQ.q, a: correctAnswerText };
                         saveWrongBank();
@@ -947,6 +1012,11 @@
 
             buttons.forEach(btn => btn.disabled = true);
             updateProgress(quizType);
+
+            // CẬP NHẬT: Lưu tiến độ vào localStorage (chỉ cho tab chính)
+            if (quizType === 'main') {
+                saveMainProgress();
+            }
         }
 
         function updateProgress(quizType) {
@@ -990,11 +1060,18 @@
         // --- 6. HÀM CHO CÁC NÚT ĐIỀU KHIỂN ---
 
         function shuffleAll(quizType) {
+            // CẬP NHẬT: Nút trộn sẽ xóa tiến độ hiện tại
             if (quizType === 'main') {
-                sessionQuestions_Main = shuffleArray(sessionQuestions_Main); // Trộn thứ tự câu hỏi
-                sessionQuestions_Main.forEach(q => q.choices = shuffleArray(q.choices)); // Trộn thứ tự đáp án
+                if (!confirm('Trộn câu hỏi sẽ reset tiến độ làm bài hiện tại. Bạn có chắc chắn?')) {
+                    return;
+                }
+                localStorage.removeItem(MAIN_PROGRESS_KEY);
                 answeredQuestions_Main = {};
                 correctCount_Main = 0;
+
+                sessionQuestions_Main = shuffleArray(sessionQuestions_Main); // Trộn thứ tự câu hỏi
+                sessionQuestions_Main.forEach(q => q.choices = shuffleArray(q.choices)); // Trộn thứ tự đáp án
+                
                 renderQuiz('main', sessionQuestions_Main, quizContainer_Main);
                 updateProgress('main');
             } else {
@@ -1007,10 +1084,13 @@
             }
         }
 
+        // CẬP NHẬT: resetAll sẽ xóa cả tiến độ đã lưu
         function resetAll() {
             if (confirm('Bạn có chắc muốn reset TOÀN BỘ? Mọi tiến độ và DANH SÁCH CÂU SAI sẽ bị xóa vĩnh viễn.')) {
-                localStorage.removeItem('ktctWrongBank');
+                localStorage.removeItem(WRONG_BANK_KEY);
+                localStorage.removeItem(MAIN_PROGRESS_KEY); // Xóa tiến độ
                 wrongBank = {};
+                answeredQuestions_Main = {}; // Reset state
                 renderWrongBankList(); 
                 startNewMainSession(); 
                 startNewWrongSession(); 
@@ -1019,24 +1099,43 @@
 
         // --- 7. HÀM LƯU TRỮ VÀ TIỆN ÍCH ---
 
+        // CẬP NHẬT: Các hàm lưu/tải cho localStorage
         function loadWrongBank() {
             try {
-                const data = localStorage.getItem('ktctWrongBank');
+                const data = localStorage.getItem(WRONG_BANK_KEY);
                 if (data) {
                     wrongBank = JSON.parse(data) || {};
                 } else {
                     wrongBank = {};
                 }
             } catch (e) {
-                console.error("Lỗi parse JSON từ localStorage:", e);
+                console.error("Lỗi parse JSON (wrong bank) từ localStorage:", e);
                 wrongBank = {};
             }
             renderWrongBankList();
         }
 
         function saveWrongBank() {
-            localStorage.setItem('ktctWrongBank', JSON.stringify(wrongBank));
+            localStorage.setItem(WRONG_BANK_KEY, JSON.stringify(wrongBank));
             wrongCount.textContent = Object.keys(wrongBank).length;
+        }
+
+        function loadMainProgress() {
+            try {
+                const data = localStorage.getItem(MAIN_PROGRESS_KEY);
+                if (data) {
+                    answeredQuestions_Main = JSON.parse(data) || {};
+                } else {
+                    answeredQuestions_Main = {};
+                }
+            } catch (e) {
+                console.error("Lỗi parse JSON (main progress) từ localStorage:", e);
+                answeredQuestions_Main = {};
+            }
+        }
+
+        function saveMainProgress() {
+            localStorage.setItem(MAIN_PROGRESS_KEY, JSON.stringify(answeredQuestions_Main));
         }
 
         function shuffleArray(array) {
