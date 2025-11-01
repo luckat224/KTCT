@@ -412,9 +412,9 @@
             "Yếu tố nào quyết định giá trị xã hội của hàng hóa? => Lao động hao phí để sản xuất ra hàng hóa.",
             "Giá cả hàng hóa là gì? => Biểu hiện bằng tiền của giá trị hàng hóa.",
             "Yếu tố bên trong quyết định giá cả hàng hóa là gì? => Giá trị của hàng hoá.",
-            "Bản chất của tiền tệ là gì ? => Là hàng hóa đặc biệt, vật ngang giá cho các hàng hoá khác; thể hiện lao động xã hội kết tinh trong hàng hoá; phản ánh quan hệ kinh tế giữa những người sản xuất hàng hóa.",
+            "Bản chất của tiền tệ là gì ? => Là hàng hóa đặc biệt, vật ngang giá cho các hàng hoá khác; thể hiện lao động xã hội kết tinh trong hàng hoá; phản ánh quan hệ kinh tế giữa những người sản xuất hàng hóa.",
             "Trong nền kinh tế thị trường định hướng xã hội chủa nghĩa ở Việt Nam thành phần kinh tế nào giữ vai trò chủ đạo? => Kinh tế nhà nước.",
-            "Cơ chế thị trường là gì ? => Hệ thống các quan hệ kinh tế mang tính tự điều chỉnh tuân theo yêu cầu của các quy luật kinh tế.",
+            "Cơ chế thị trường là gì ? => Hệ thống các quan hệ kinh tế mang tính tự điều chỉnh tuân theo yêu cầu của các quy luật kinh tế.",
             "Thể chế kinh tế thị trường định hướng xã hội chủ nghĩa là gì? => Là thể chế kinh tế thị trường trong đó các thiết chế, công cụ và nguyên tắc vận hành được tự giác tạo lập và sử dụng để phát triển lực lượng sản xuất cải thiện đời sống nhân dân vì mục tiêu dân giàu nước mạnh xã hội công bằng dân chủ văn minh.",
             "Sức lao động là gì? => Năng lực thể chất và tinh thần của con người được vận dụng vào quá trình sản xuất.",
             "Quy luật kinh tế chủ yếu của thị trường là những quy luật nào? => Quy luật giá trị, cung cầu, cạnh tranh, lưu thông tiền tệ.",
@@ -569,6 +569,7 @@
         // CẬP NHẬT: Tách riêng state cho 2 tab trắc nghiệm
         let sessionQuestions_Main = [];
         let sessionQuestions_Wrong = [];
+        // answeredQuestions: { qId: { selectedIndex, isCorrect } }
         let answeredQuestions_Main = {};
         let answeredQuestions_Wrong = {};
         let correctCount_Main = 0;
@@ -619,40 +620,70 @@
                 })
                 .filter(q => q !== null); 
 
-            startNewMainSession(); // Bắt đầu phiên làm việc chính
-            startNewWrongSession(); // Khởi tạo phiên làm việc câu sai (có thể rỗng)
+            // Khởi tạo: nếu có session đã lưu thì load, nếu không thì tạo mới
+            startNewMainSession(false);
+            startNewWrongSession(false);
 
             // Gán sự kiện cho các nút
             // Nút tab chính
             document.getElementById('shuffle-all-btn-main').addEventListener('click', () => shuffleAll('main'));
-            document.getElementById('reset-session-btn-main').addEventListener('click', startNewMainSession);
+            // Reset session main: xóa session đã lưu và tạo mới
+            document.getElementById('reset-session-btn-main').addEventListener('click', () => startNewMainSession(true));
             document.getElementById('reset-all-btn').addEventListener('click', resetAll);
             
             // Nút tab câu sai
             document.getElementById('shuffle-all-btn-wrong').addEventListener('click', () => shuffleAll('wrong'));
-            document.getElementById('reset-session-btn-wrong').addEventListener('click', startNewWrongSession);
+            // Reset session wrong: xóa session câu sai và tạo mới
+            document.getElementById('reset-session-btn-wrong').addEventListener('click', () => startNewWrongSession(true));
             
             // Gán sự kiện cho các Tab
             tabBtnQuiz.addEventListener('click', () => showTab('quiz'));
             tabBtnWrongQuiz.addEventListener('click', () => {
-                startNewWrongSession(); // Luôn làm mới khi nhấn vào tab này
+                // Không khởi tạo lại khi chuyển tab (để giữ tiến độ)
                 showTab('wrong-quiz');
             });
             tabBtnWrongList.addEventListener('click', () => showTab('wrong-list'));
         });
 
         // Phiên làm việc CHÍNH (Toàn bộ câu hỏi)
-        function startNewMainSession() {
+        function startNewMainSession(forceReset = false) {
+            // Nếu không ép reset thì cố gắng load session đã lưu
+            if (!forceReset) {
+                const loaded = loadSession('main');
+                if (loaded) {
+                    renderQuiz('main', sessionQuestions_Main, quizContainer_Main);
+                    updateProgress('main');
+                    showTab('quiz');
+                    return;
+                }
+            } else {
+                // xóa state đã lưu nếu ép reset
+                localStorage.removeItem('ktctStateMain');
+            }
+
+            // Tạo session mới
             answeredQuestions_Main = {};
             correctCount_Main = 0;
             sessionQuestions_Main = generateSessionQuestions(MASTER_QUESTIONS_DB);
             renderQuiz('main', sessionQuestions_Main, quizContainer_Main);
             updateProgress('main');
+            saveSession('main');
             showTab('quiz'); // Đảm bảo tab chính hiển thị
         }
 
         // Phiên làm việc CÂU SAI
-        function startNewWrongSession() {
+        function startNewWrongSession(forceReset = false) {
+            if (!forceReset) {
+                const loaded = loadSession('wrong');
+                if (loaded) {
+                    renderQuiz('wrong', sessionQuestions_Wrong, quizContainer_Wrong);
+                    updateProgress('wrong');
+                    return;
+                }
+            } else {
+                localStorage.removeItem('ktctStateWrong');
+            }
+
             const wrongKeys = Object.keys(wrongBank);
             const wrongMasterList = wrongKeys.map(key => MASTER_QUESTIONS_DB.find(q => q.id === key)).filter(Boolean);
 
@@ -661,6 +692,7 @@
             sessionQuestions_Wrong = generateSessionQuestions(wrongMasterList);
             renderQuiz('wrong', sessionQuestions_Wrong, quizContainer_Wrong);
             updateProgress('wrong');
+            saveSession('wrong');
         }
 
 
@@ -697,6 +729,8 @@
                 return;
             }
             
+            const answeredMap = (quizType === 'main') ? answeredQuestions_Main : answeredQuestions_Wrong;
+
             questions.forEach((q, index) => { 
                 const card = document.createElement('div');
                 card.className = 'question-card';
@@ -710,11 +744,11 @@
                 const grid = document.createElement('div');
                 grid.className = 'answer-grid';
                 
-                q.choices.forEach((choice, index) => {
+                q.choices.forEach((choice, cIndex) => {
                     const btn = document.createElement('button');
                     btn.className = 'answer-btn';
                     btn.textContent = choice.text;
-                    btn.dataset.index = index;
+                    btn.dataset.index = cIndex;
                     // Quan trọng: Truyền quizType vào hàm xử lý
                     btn.onclick = () => handleAnswerClick(q.id, choice.isCorrect, btn, quizType);
                     grid.appendChild(btn);
@@ -722,6 +756,27 @@
 
                 card.appendChild(grid);
                 container.appendChild(card);
+
+                // Nếu đã trả lời trong session được load, phục hồi trạng thái UI
+                const had = answeredMap[q.id];
+                if (had) {
+                    const btns = card.querySelectorAll('.answer-btn');
+                    btns.forEach(b => b.disabled = true);
+                    const selectedBtn = card.querySelector(`.answer-btn[data-index="${had.selectedIndex}"]`);
+                    if (selectedBtn) {
+                        if (had.isCorrect) {
+                            selectedBtn.classList.add('correct');
+                        } else {
+                            selectedBtn.classList.add('wrong');
+                            // highlight correct one
+                            const correctBtn = Array.from(btns).find(b => {
+                                const idx = parseInt(b.dataset.index, 10);
+                                return q.choices[idx] && q.choices[idx].isCorrect;
+                            });
+                            if (correctBtn) correctBtn.classList.add('correct');
+                        }
+                    }
+                }
             });
         }
 
@@ -752,7 +807,8 @@
             const state_answered = (quizType === 'main') ? answeredQuestions_Main : answeredQuestions_Wrong;
             
             if (state_answered[qId]) return; // Đã trả lời trong phiên này
-            state_answered[qId] = true;
+            const selectedIndex = parseInt(clickedButton.dataset.index, 10);
+            state_answered[qId] = { selectedIndex, isCorrect };
             
             const card = clickedButton.closest('.question-card');
             const buttons = card.querySelectorAll('.answer-btn');
@@ -793,6 +849,7 @@
 
             buttons.forEach(btn => btn.disabled = true);
             updateProgress(quizType);
+            saveSession(quizType); // Lưu trạng thái ngay khi trả lời
         }
 
         function updateProgress(quizType) {
@@ -844,6 +901,7 @@
                 correctCount_Main = 0;
                 renderQuiz('main', sessionQuestions_Main, quizContainer_Main);
                 updateProgress('main');
+                saveSession('main');
             } else {
                 sessionQuestions_Wrong = shuffleArray(sessionQuestions_Wrong);
                 sessionQuestions_Wrong.forEach(q => q.choices = shuffleArray(q.choices));
@@ -851,16 +909,19 @@
                 correctCount_Wrong = 0;
                 renderQuiz('wrong', sessionQuestions_Wrong, quizContainer_Wrong);
                 updateProgress('wrong');
+                saveSession('wrong');
             }
         }
 
         function resetAll() {
             if (confirm('Bạn có chắc muốn reset TOÀN BỘ? Mọi tiến độ và DANH SÁCH CÂU SAI sẽ bị xóa vĩnh viễn.')) {
                 localStorage.removeItem('ktctWrongBank');
+                localStorage.removeItem('ktctStateMain');
+                localStorage.removeItem('ktctStateWrong');
                 wrongBank = {};
                 renderWrongBankList(); // Cập nhật UI tab danh sách câu sai
-                startNewMainSession(); // Quay về session đầy đủ
-                startNewWrongSession(); // Reset luôn cả session câu sai
+                startNewMainSession(true); // Quay về session đầy đủ (ép reset)
+                startNewWrongSession(true); // Reset luôn cả session câu sai
             }
         }
 
@@ -884,6 +945,41 @@
         function saveWrongBank() {
             localStorage.setItem('ktctWrongBank', JSON.stringify(wrongBank));
             wrongCount.textContent = Object.keys(wrongBank).length;
+        }
+
+        // Lưu session hiện tại (main / wrong)
+        function saveSession(quizType) {
+            const key = (quizType === 'main') ? 'ktctStateMain' : 'ktctStateWrong';
+            const payload = {
+                sessionQuestions: (quizType === 'main') ? sessionQuestions_Main : sessionQuestions_Wrong,
+                answeredQuestions: (quizType === 'main') ? answeredQuestions_Main : answeredQuestions_Wrong,
+                correctCount: (quizType === 'main') ? correctCount_Main : correctCount_Wrong
+            };
+            localStorage.setItem(key, JSON.stringify(payload));
+        }
+
+        // Load session nếu có, trả về true nếu đã load
+        function loadSession(quizType) {
+            const key = (quizType === 'main') ? 'ktctStateMain' : 'ktctStateWrong';
+            try {
+                const data = localStorage.getItem(key);
+                if (!data) return false;
+                const parsed = JSON.parse(data);
+                if (!parsed || !Array.isArray(parsed.sessionQuestions)) return false;
+                if (quizType === 'main') {
+                    sessionQuestions_Main = parsed.sessionQuestions;
+                    answeredQuestions_Main = parsed.answeredQuestions || {};
+                    correctCount_Main = parsed.correctCount || 0;
+                } else {
+                    sessionQuestions_Wrong = parsed.sessionQuestions;
+                    answeredQuestions_Wrong = parsed.answeredQuestions || {};
+                    correctCount_Wrong = parsed.correctCount || 0;
+                }
+                return true;
+            } catch (e) {
+                console.error('Lỗi load session từ localStorage', e);
+                return false;
+            }
         }
 
         function shuffleArray(array) {
@@ -911,7 +1007,5 @@
             });
         }
     </script>
-
 </body>
 </html>
-
